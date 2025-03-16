@@ -24,16 +24,8 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    using var scope = app.Services.CreateScope();
-
-    var dbContext = scope.ServiceProvider.GetRequiredService<BlogPostDbContext>();
-    if (dbContext.Database.IsInMemory())
-    {
-        dbContext.Seed();
-    }
-    
-
-    
+    var database = app.Services.GetRequiredService<BlogPostDbContext>();
+    database.Seed();
 }
 
 app.UseHttpsRedirection();

@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using VivesBlog.Mvc.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,11 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 //nieuwe service registreren:
-builder.Services.AddDbContext<BlogPostDbContext>(options =>
-{
-    //voeg unieke naam toe!
-    options.UseInMemoryDatabase(nameof(BlogPostDbContext));
-});
+builder.Services.AddSingleton<BlogPostDbContext>();
 
 var app = builder.Build();
 
@@ -24,16 +19,8 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    using var scope = app.Services.CreateScope();
-
-    var dbContext = scope.ServiceProvider.GetRequiredService<BlogPostDbContext>();
-    if (dbContext.Database.IsInMemory())
-    {
-        dbContext.Seed();
-    }
-    
-
-    
+    var database = app.Services.GetRequiredService<BlogPostDbContext>();
+    database.Seed();
 }
 
 app.UseHttpsRedirection();

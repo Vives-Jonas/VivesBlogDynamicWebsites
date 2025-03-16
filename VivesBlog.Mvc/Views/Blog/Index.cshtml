@@ -1,0 +1,10 @@
+﻿@model IList<BlogPost>
+
+<div class="container mt-4">
+    <div class="row">
+        @foreach (var blogPost in Model)
+        {
+            <partial name="BlogPostCardPartial" model="blogPost" />
+        }
+    </div>
+</div>
