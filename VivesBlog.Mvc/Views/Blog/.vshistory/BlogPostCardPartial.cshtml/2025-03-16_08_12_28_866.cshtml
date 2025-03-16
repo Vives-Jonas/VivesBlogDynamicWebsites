@@ -2,14 +2,14 @@
 
 
 <div class="card mb-2">
-    <h5 class="card-title bg-primary  p-0 m-0  w-100">@Model.Title</h5>
-    <div class="card-body bg-light p-0 m-0">
+    <h5 class="card-title bg-primary-subtle pb-2 pt-2 ">@Model.Title</h5>
+    <div class="card-body bg-light">
 
         @if (Model.Author is not null)
         {
-            <h6 class="card-subtitle mb-2 text-muted  p-1 ">@Model.Author.Name</h6>
+            <h6 class="card-subtitle mb-2 text-muted  pb-1 pt-1">@Model.Author.Name</h6>
         }
-        <p class="card-text p-1">@Model.Content</p>
+        <p class="card-text pb-1 pt-1 p">@Model.Content</p>
         @if (ViewData["IsDetail"] is true)
         {
             <a asp-area="" asp-controller="Blog" asp-action="Index" class="btn btn-primary card-link">Go Back</a>

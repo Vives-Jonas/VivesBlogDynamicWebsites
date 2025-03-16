@@ -1,15 +1,14 @@
 ﻿@model BlogPost
 
 
-<div class="card mb-2">
-    <h5 class="card-title bg-primary  p-0 m-0  w-100">@Model.Title</h5>
-    <div class="card-body bg-light p-0 m-0">
-
-        @if (Model.Author is not null)
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title bg-primary-subtle">@Model.Title</h5>
+        @if (Model.Author is not null) 
         {
-            <h6 class="card-subtitle mb-2 text-muted  p-1 ">@Model.Author.Name</h6>
-        }
-        <p class="card-text p-1">@Model.Content</p>
+            <h6 class="card-subtitle mb-2 text-muted">@Model.Author.Name</h6>
+        }        
+        <p class="card-text bg-light">@Model.Content</p>
         @if (ViewData["IsDetail"] is true)
         {
             <a asp-area="" asp-controller="Blog" asp-action="Index" class="btn btn-primary card-link">Go Back</a>
@@ -18,6 +17,6 @@
         {
             <a asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.Id" class="btn btn-primary card-link">Details</a>
         }
-
+                
     </div>
 </div>
