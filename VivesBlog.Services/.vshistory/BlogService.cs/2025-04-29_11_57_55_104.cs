@@ -22,21 +22,16 @@ namespace VivesBlog.Services
 
         public IList<BlogPost> GetAll()
         {
-            return _dbContext.BlogPosts
-                .Include(b => b.Author)
-                .ToList();
+            return _dbContext.BlogPosts.Include(b => b.Author).ToList();
         }
 
         public BlogPost? GetById(int id)
         {
-            return _dbContext.BlogPosts
-                .Include(b => b.Author)
-                .FirstOrDefault(b => b.Id == id);
+            return _dbContext.BlogPosts.FirstOrDefault(b => b.Id == id);
         }
 
         public BlogPost? Create(BlogPost blogPost)
         {
-            blogPost.CreatedDate = DateTime.Now;
             _dbContext.BlogPosts.Add(blogPost);
             _dbContext.SaveChanges();
             return blogPost;

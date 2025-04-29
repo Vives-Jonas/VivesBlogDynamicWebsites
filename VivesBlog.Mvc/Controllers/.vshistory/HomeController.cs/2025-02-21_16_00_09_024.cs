@@ -1,24 +1,21 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using VivesBlog.Mvc.Models;
-using VivesBlog.Services;
 
 namespace VivesBlog.Mvc.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly BlogService _blogService;
-        public HomeController(ILogger<HomeController> logger, BlogService blogService)
+
+        public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
-            _blogService = blogService;
         }
 
         public IActionResult Index()
         {
-            var blogPosts = _blogService.GetAll();
-            return View(blogPosts);
+            return View();
         }
 
         public IActionResult About()

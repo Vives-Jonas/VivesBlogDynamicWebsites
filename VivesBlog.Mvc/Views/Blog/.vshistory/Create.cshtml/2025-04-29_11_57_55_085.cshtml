@@ -2,7 +2,6 @@
 
 @{
     ViewBag.Title = "Create BlogPost";
-    var authors = (IList<Person>)ViewBag.Authors;
 }
 
 
@@ -17,16 +16,6 @@
         <label asp-for="Content" class="form-label"></label>
         <textarea asp-for="Content" class="form-control"></textarea>
     </div>
-    <div class="mb-3">
-        <label asp-for="AuthorId" class="form-label">Author</label>
-        <select asp-for="AuthorId" class="form-control">
-            <option value="">Please Select author...</option>
-            @foreach (var author in authors)
-            {
-                <option value="@author.Id">@author.FirstName @author.LastName</option>
-            }
-        </select>
 
-    </div>
     <button type="submit" class="btn btn-primary">Create</button>
 </form>

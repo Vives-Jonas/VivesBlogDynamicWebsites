@@ -38,8 +38,7 @@ namespace VivesBlog.Mvc.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var authors = _personService.Find();
-            ViewBag.Authors = authors;
+            
             return View();
         }
 

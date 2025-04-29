@@ -1,11 +1,11 @@
 ﻿@model BlogPost
 
 
-<div class="card mb-2 p-2 bg-light">
+<div class="card mb-2 p-3 bg-light">
     
 
-    <div class="card-body ">
-        <h5 class="card-title">
+    <div class="card-body p-0 m-0">
+        <h5 class="card-title p-0 m-0 w-100">
             @Model.Title
         </h5>
         @if (Model.Author is not null)
@@ -18,7 +18,7 @@
         <p class="card-text p-1">
             @Model.Content
         </p>
-        <div class="card-text my-2"><small class="text-muted">Posted on: @Model.CreatedDate.ToShortDateString() @Model.CreatedDate.ToShortTimeString()</small></div>
+
         @if (ViewData["IsDetail"] is true)
         {
             <a asp-area="" asp-controller="Blog" asp-action="Index" class="btn btn-primary card-link">
@@ -31,6 +31,5 @@
                 Details
             </a>
         }
-        
     </div>
 </div>
