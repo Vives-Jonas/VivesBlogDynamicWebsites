@@ -11,12 +11,10 @@ namespace VivesBlog.Mvc.Controllers
 
         
         private readonly BlogService _blogService;
-        private readonly PersonService _personService;
-        public BlogController(BlogService blogService, PersonService personService)
+        public BlogController(BlogService blogService)
         {
             
             _blogService = blogService;
-            _personService = personService;
         }
 
         [HttpGet]

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VivesBlog.Mvc.Models;
+using VivesBlog.Model;
 
-namespace VivesBlog.Mvc.Core
+namespace VivesBlog.Repository
 {
     public class BlogPostDbContext(DbContextOptions<BlogPostDbContext> options) : DbContext(options)
     {
@@ -19,6 +19,9 @@ namespace VivesBlog.Mvc.Core
 
 
             });
+
+            SaveChanges();
+
 
             var emily = People.FirstOrDefault(p => p.Name == "Dr. Emily Carter");
             var sarah = People.FirstOrDefault(p => p.Name == "Sarah Thompson");

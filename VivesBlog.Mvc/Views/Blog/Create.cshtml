@@ -1,0 +1,21 @@
+﻿@model BlogPost
+
+@{
+    ViewBag.Title = "Create BlogPost";
+}
+
+
+<h1>@ViewBag.Title</h1>
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Title" class="form-label"></label>
+        <input asp-for="Title" class="form-control">
+
+    </div>
+    <div class="mb-3">
+        <label asp-for="Content" class="form-label"></label>
+        <textarea asp-for="Content" class="form-control"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Create</button>
+</form>

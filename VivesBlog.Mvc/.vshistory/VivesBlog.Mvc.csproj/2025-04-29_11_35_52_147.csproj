@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\VivesBlog.Services\VivesBlog.Services.csproj" />
+    <Folder Include="Core\" />
   </ItemGroup>
 
 </Project>

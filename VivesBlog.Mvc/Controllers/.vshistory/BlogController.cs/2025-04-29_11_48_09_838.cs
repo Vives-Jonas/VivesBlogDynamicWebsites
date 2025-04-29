@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VivesBlog.Model;
 using VivesBlog.Repository;
 using VivesBlog.Services;
 
@@ -11,12 +10,10 @@ namespace VivesBlog.Mvc.Controllers
 
         
         private readonly BlogService _blogService;
-        private readonly PersonService _personService;
-        public BlogController(BlogService blogService, PersonService personService)
+        public BlogController(BlogService blogService)
         {
             
             _blogService = blogService;
-            _personService = personService;
         }
 
         [HttpGet]
@@ -24,6 +21,12 @@ namespace VivesBlog.Mvc.Controllers
         {
             ViewData["IsDetail"] = false;
             var allBlogPosts = _blogService.GetAll();
+            var count = allBlogPosts.Count;
+            var withAuthorCount = allBlogPosts.Count(b => b.Author != null);
+
+            //var blogPosts = _dbContext.BlogPosts
+            //    .Include(b => b.Author)
+            //    .ToList();
             return View(allBlogPosts);
         }
 
@@ -33,20 +36,6 @@ namespace VivesBlog.Mvc.Controllers
             ViewData["IsDetail"] = true;
             var blogPost = _blogService.GetById(id);
             return View(blogPost);
-        }
-
-        [HttpGet]
-        public IActionResult Create()
-        {
-            
-            return View();
-        }
-
-        [HttpPost]
-        public IActionResult Create(BlogPost blogPost)
-        {
-            _blogService.Create(blogPost);
-            return RedirectToAction("Index");
         }
     }
 }

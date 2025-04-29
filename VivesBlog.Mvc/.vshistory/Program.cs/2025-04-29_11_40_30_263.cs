@@ -1,14 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using VivesBlog.Repository;
-using VivesBlog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-builder.Services.AddScoped<BlogService>();
-builder.Services.AddScoped<PersonService>();
 
 //nieuwe service registreren:
 builder.Services.AddDbContext<BlogPostDbContext>(options =>

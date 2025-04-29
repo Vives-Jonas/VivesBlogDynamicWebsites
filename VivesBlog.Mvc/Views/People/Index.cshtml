@@ -1,0 +1,11 @@
+﻿@model IList<Person>
+
+<a asp-action="Create">Add Person</a>
+<div class="container mt-4">
+    <ul class="list-group">
+        @foreach (var person in Model)
+        {
+            <li class="list-group-item">@person.FirstName @person.LastName</li>
+        }
+    </ul>
+</div>
