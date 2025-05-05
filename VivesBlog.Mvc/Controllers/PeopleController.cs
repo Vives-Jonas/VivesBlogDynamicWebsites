@@ -33,6 +33,7 @@ namespace VivesBlog.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Person person)
         {
             _personService.Create(person);

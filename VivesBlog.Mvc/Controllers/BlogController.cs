@@ -44,6 +44,7 @@ namespace VivesBlog.Mvc.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(BlogPost blogPost)
         {
             _blogService.Create(blogPost);
