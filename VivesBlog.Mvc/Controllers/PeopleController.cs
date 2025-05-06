@@ -57,5 +57,25 @@ namespace VivesBlog.Mvc.Controllers
             _personService.Update(id, person);
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Delete([FromRoute] int id)
+        {
+            var person = _personService.Get(id);
+            if (person is null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(person);
+        }
+
+        [HttpPost]
+        [Route("[controller]/Delete/{id:int}")]
+        public IActionResult DeleteConfirmed([FromRoute] int id)
+        {
+            _personService.Delete(id);
+
+            return RedirectToAction("Index");
+        }
     }
 }
