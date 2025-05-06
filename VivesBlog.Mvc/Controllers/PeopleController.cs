@@ -39,5 +39,23 @@ namespace VivesBlog.Mvc.Controllers
             _personService.Create(person);
             return RedirectToAction("Index");
         }
+
+        [HttpGet]
+        public IActionResult Edit([FromRoute]int id)
+        {
+            var person = _personService.Get(id);
+            if (person is null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(person);
+        }
+
+        [HttpPost]
+        public IActionResult Edit([FromRoute] int id, [FromForm] Person person)
+        {
+            _personService.Update(id, person);
+            return RedirectToAction("Index");
+        }
     }
 }
