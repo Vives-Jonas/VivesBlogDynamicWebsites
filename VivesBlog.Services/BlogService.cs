@@ -20,14 +20,14 @@ namespace VivesBlog.Services
         }
 
 
-        public IList<BlogPost> GetAll()
+        public IList<BlogPost> Find()
         {
             return _dbContext.BlogPosts
                 .Include(b => b.Author)
                 .ToList();
         }
 
-        public BlogPost? GetById(int id)
+        public BlogPost? Get(int id)
         {
             return _dbContext.BlogPosts
                 .Include(b => b.Author)
@@ -40,6 +40,37 @@ namespace VivesBlog.Services
             _dbContext.BlogPosts.Add(blogPost);
             _dbContext.SaveChanges();
             return blogPost;
+        }
+
+        public BlogPost? Update(int id, BlogPost blogPost)
+        {
+            var dbBlogPost = Get(id);
+
+            if (dbBlogPost == null)
+            {
+                return null;
+            }
+
+            dbBlogPost.UpdatedDate = DateTime.Now;
+            dbBlogPost.AuthorId = blogPost.AuthorId;
+            dbBlogPost.Title = blogPost.Title;
+            dbBlogPost.Content = blogPost.Content;
+
+            _dbContext.SaveChanges();
+
+            return dbBlogPost;
+        }
+
+        public void Delete(int id)
+        {
+            var blogPost = Get(id);
+            if (blogPost == null)
+            {
+                return;
+            }
+
+            _dbContext.BlogPosts.Remove(blogPost);
+            _dbContext.SaveChanges();
         }
     }
 }

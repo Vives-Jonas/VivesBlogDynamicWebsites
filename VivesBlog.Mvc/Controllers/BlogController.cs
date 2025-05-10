@@ -23,7 +23,7 @@ namespace VivesBlog.Mvc.Controllers
         public IActionResult Index()
         {
             ViewData["IsDetail"] = false;
-            var allBlogPosts = _blogService.GetAll();
+            var allBlogPosts = _blogService.Find();
             return View(allBlogPosts);
         }
 
@@ -31,7 +31,12 @@ namespace VivesBlog.Mvc.Controllers
         public IActionResult Detail(int id)
         {
             ViewData["IsDetail"] = true;
-            var blogPost = _blogService.GetById(id);
+            var blogPost = _blogService.Get(id);
+            
+            if (blogPost == null)
+            {
+                return NotFound($"Blog post with ID {id} not found.");
+            }
             return View(blogPost);
         }
 
@@ -47,7 +52,48 @@ namespace VivesBlog.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Create(BlogPost blogPost)
         {
+           
             _blogService.Create(blogPost);
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public IActionResult Edit(int id)
+        {
+            var blogPost = _blogService.Get(id);
+            if (blogPost is null)
+            {
+                return RedirectToAction("Index");
+            }
+            ViewBag.Authors = _personService.Find();
+            return View(blogPost);
+
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit([FromRoute] int id, [FromForm] BlogPost blogPost)
+        {
+            _blogService.Update(id, blogPost);
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public IActionResult Delete(int id)
+        {
+            var blogPost = _blogService.Get(id);
+            if (blogPost is null)
+            {
+                return RedirectToAction("Index");
+            }
+            return View(blogPost);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("[controller]/Delete/{id:int}")]
+        public IActionResult DeleteConfirmed(int id)
+        {
+            _blogService.Delete(id);
+
             return RedirectToAction("Index");
         }
     }

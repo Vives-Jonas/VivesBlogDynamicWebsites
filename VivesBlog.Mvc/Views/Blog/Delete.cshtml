@@ -1,0 +1,14 @@
+﻿@model BlogPost
+
+@{
+    ViewBag.Title = "Delete BlogPost";
+}
+
+<h1>@ViewBag.Title</h1>
+
+<form method="post">
+    <p>Are you sure you want to delete Blog Post "@Model.Title"?</p>
+    
+    <a class="btn btn-primary" asp-action="Index">No</a>
+    <button type="submit" class="btn btn-danger">Yes</button>
+</form>

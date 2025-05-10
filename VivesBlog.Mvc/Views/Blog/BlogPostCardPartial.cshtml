@@ -2,7 +2,7 @@
 
 
 <div class="card mb-2 p-2 bg-light">
-    
+
 
     <div class="card-body ">
         <h5 class="card-title">
@@ -19,18 +19,31 @@
             @Model.Content
         </p>
         <div class="card-text my-2"><small class="text-muted">Posted on: @Model.CreatedDate.ToShortDateString() @Model.CreatedDate.ToShortTimeString()</small></div>
+        @if (Model.UpdatedDate is not null)
+        {
+            <div class="card-text my-2"><small class="text-muted">Updated on: @Model.UpdatedDate?.ToShortDateString() @Model.UpdatedDate?.ToShortTimeString()</small></div>
+        }
         @if (ViewData["IsDetail"] is true)
         {
-            <a asp-area="" asp-controller="Blog" asp-action="Index" class="btn btn-primary card-link">
-                Go Back
-            </a>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a asp-area="" asp-controller="Blog" asp-action="Index" class="btn btn-outline-secondary">
+                    Go Back
+                </a>
+                <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+            </div>
         }
         else
         {
-            <a asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.Id" class="btn btn-primary card-link">
-                Details
-            </a>
+            <div class="d-flex flex-wrap gap-2 mt-3">
+                <a asp-area="" asp-controller="Blog" asp-action="Detail" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                    Details
+                </a>
+                <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+                <a class="btn btn-outline-danger" asp-action="Delete" asp-route-id="@Model.Id">Delete</a>
+            </div>
+
         }
-        
+
     </div>
 </div>

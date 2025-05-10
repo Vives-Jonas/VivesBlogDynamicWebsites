@@ -17,7 +17,7 @@ namespace VivesBlog.Mvc.Controllers
 
         public IActionResult Index()
         {
-            var blogPosts = _blogService.GetAll();
+            var blogPosts = _blogService.Find();
             return View(blogPosts);
         }
 
