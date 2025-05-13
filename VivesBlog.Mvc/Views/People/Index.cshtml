@@ -8,22 +8,22 @@
 
 <table class="table table-striped mt-3">
     <thead>
-    <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Email</th>
-        <th>Actions</th>
-    </tr>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Actions</th>
+        </tr>
     </thead>
     <tbody>
-    @foreach (var person in Model)
-    {
-        <partial name="PersonRowPartial" model="person"/>
-    }
+        @foreach (var person in Model)
+        {
+            <partial name="PersonRowPartial" model="person" />
+        }
     </tbody>
 </table>
 
-@section Modal 
+@section Modal
 {
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -33,13 +33,34 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    Are you sure you want to delete this person?
+                    <p>Are you sure you want to delete <span id="Person" ></span>?</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                    <button type="button" class="btn btn-primary">Yes</button>
+                    <form method="post" asp-action="Delete">
+                        <input type="hidden" name="Id"/>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-danger">Yes</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+}
+
+@section Scripts
+{
+    <script>
+        $(function(){
+            $("[data-type='deleteButton']").on("click", function() {
+               let id = $(this).data("id");
+               let input = $("#deleteModal input[name='Id']");
+               $(input).val(id);
+
+               let name = $(this).data("name");
+               let span = $(".modal-body span[id='Person']");
+               $(span).html(name);
+
+            });
+        });
+    </script>
 }

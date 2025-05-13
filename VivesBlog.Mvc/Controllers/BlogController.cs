@@ -77,19 +77,19 @@ namespace VivesBlog.Mvc.Controllers
             _blogService.Update(id, blogPost);
             return RedirectToAction("Index");
         }
-        [HttpGet]
-        public IActionResult Delete(int id)
-        {
-            var blogPost = _blogService.Get(id);
-            if (blogPost is null)
-            {
-                return RedirectToAction("Index");
-            }
-            return View(blogPost);
-        }
+        //[HttpGet]
+        //public IActionResult Delete(int id)
+        //{
+        //    var blogPost = _blogService.Get(id);
+        //    if (blogPost is null)
+        //    {
+        //        return RedirectToAction("Index");
+        //    }
+        //    return View(blogPost);
+        //}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("[controller]/Delete/{id:int}")]
+        [Route("[controller]/Delete/{id:int?}")]
         public IActionResult DeleteConfirmed(int id)
         {
             _blogService.Delete(id);
