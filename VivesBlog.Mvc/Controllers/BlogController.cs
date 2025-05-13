@@ -43,16 +43,17 @@ namespace VivesBlog.Mvc.Controllers
         [HttpGet]
         public IActionResult Create()
         {
-            var authors = _personService.Find();
-            ViewBag.Authors = authors;
-            return View();
+            return CreateView("Create");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Create(BlogPost blogPost)
         {
-           
+            if (!ModelState.IsValid)
+            {
+                return CreateView("Create", blogPost);
+            }
             _blogService.Create(blogPost);
             return RedirectToAction("Index");
         }
@@ -65,8 +66,8 @@ namespace VivesBlog.Mvc.Controllers
             {
                 return RedirectToAction("Index");
             }
-            ViewBag.Authors = _personService.Find();
-            return View(blogPost);
+            
+            return CreateView("Edit", blogPost);
 
         }
 
@@ -74,19 +75,16 @@ namespace VivesBlog.Mvc.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult Edit([FromRoute] int id, [FromForm] BlogPost blogPost)
         {
+            if (!ModelState.IsValid)
+            {
+                return CreateView("Edit", blogPost);
+            }
+
             _blogService.Update(id, blogPost);
+
             return RedirectToAction("Index");
         }
-        //[HttpGet]
-        //public IActionResult Delete(int id)
-        //{
-        //    var blogPost = _blogService.Get(id);
-        //    if (blogPost is null)
-        //    {
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View(blogPost);
-        //}
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Route("[controller]/Delete/{id:int?}")]
@@ -95,6 +93,18 @@ namespace VivesBlog.Mvc.Controllers
             _blogService.Delete(id);
 
             return RedirectToAction("Index");
+        }
+
+
+        private IActionResult CreateView(string viewName, BlogPost? blogPost = null)
+        {
+            ViewBag.Authors = _personService.Find();
+            if (blogPost is null)
+            {
+                return View(viewName);
+            }
+            return View(viewName, blogPost);
+            
         }
     }
 }
