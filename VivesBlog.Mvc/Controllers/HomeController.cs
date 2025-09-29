@@ -5,19 +5,13 @@ using VivesBlog.Services;
 
 namespace VivesBlog.Mvc.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(ILogger<HomeController> logger, BlogService blogService) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-        private readonly BlogService _blogService;
-        public HomeController(ILogger<HomeController> logger, BlogService blogService)
-        {
-            _logger = logger;
-            _blogService = blogService;
-        }
+        
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var blogPosts = _blogService.Find();
+            var blogPosts = await blogService.Find();
             return View(blogPosts);
         }
 

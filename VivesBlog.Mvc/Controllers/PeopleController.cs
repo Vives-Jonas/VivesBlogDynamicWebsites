@@ -4,22 +4,14 @@ using VivesBlog.Services;
 
 namespace VivesBlog.Mvc.Controllers
 {
-    public class PeopleController : Controller
+    public class PeopleController(PersonService personService) : Controller
     {
         
-        private readonly PersonService _personService;
-        public PeopleController( PersonService personService)
-        {
-
-            
-            _personService = personService;
-        }
-
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
             
-            var people = _personService.Find();
+            var people = await personService.Find();
             return View(people);
         }
 
@@ -34,16 +26,16 @@ namespace VivesBlog.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Person person)
+        public async Task<IActionResult> Create(Person person)
         {
-            _personService.Create(person);
+            await personService.Create(person);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public IActionResult Edit([FromRoute]int id)
+        public async Task<IActionResult> Edit([FromRoute]int id)
         {
-            var person = _personService.Get(id);
+            var person = await personService.Get(id);
             if (person is null)
             {
                 return RedirectToAction("Index");
@@ -52,9 +44,9 @@ namespace VivesBlog.Mvc.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit([FromRoute] int id, [FromForm] Person person)
+        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] Person person)
         {
-            _personService.Update(id, person);
+            await personService.Update(id, person);
             return RedirectToAction("Index");
         }
 
@@ -70,10 +62,10 @@ namespace VivesBlog.Mvc.Controllers
         //}
 
         [HttpPost]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             
-            _personService.Delete(id);
+            await personService.Delete(id);
 
             return RedirectToAction("Index");
         }

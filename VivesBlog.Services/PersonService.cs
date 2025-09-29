@@ -3,40 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 using VivesBlog.Model;
 using VivesBlog.Repository;
 
 namespace VivesBlog.Services
 {
-    public class PersonService
+    public class PersonService(VivesBlogDbContext dbContext)
     {
-        private readonly BlogPostDbContext _dbContext;
 
-        public PersonService(BlogPostDbContext dbContext)
+        public async Task<IList<Person>> Find()
         {
-            _dbContext = dbContext;
+          return await dbContext.People.ToListAsync();
         }
 
-        public IList<Person> Find()
+        public async Task<Person?> Get(int id)
         {
-          return _dbContext.People.ToList();
+            return await dbContext.People.FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public Person? Get(int id)
+        public async Task<Person?> Create(Person person)
         {
-            return _dbContext.People.FirstOrDefault(p => p.Id == id);
-        }
-
-        public Person? Create(Person person)
-        {
-            _dbContext.People.Add(person);
-            _dbContext.SaveChanges();
+            dbContext.People.Add(person);
+            await dbContext.SaveChangesAsync();
             return person;
         }
 
-        public Person? Update(int id, Person person)
+        public async Task<Person?> Update(int id, Person person)
         {
-            var dbPerson = Get(id);
+            var dbPerson = await Get(id);
             if (dbPerson == null)
             {
                 return null;
@@ -46,20 +41,20 @@ namespace VivesBlog.Services
             dbPerson.LastName = person.LastName;
             dbPerson.Email = person.Email;
 
-            _dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return dbPerson;
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var person = Get(id);
+            var person = await Get(id);
             if (person is null)
             {
                 return;
             }
-            _dbContext.People.Remove(person);
-            _dbContext.SaveChanges();
+            dbContext.People.Remove(person);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

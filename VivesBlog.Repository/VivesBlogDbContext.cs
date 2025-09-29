@@ -3,12 +3,12 @@ using VivesBlog.Model;
 
 namespace VivesBlog.Repository
 {
-    public class BlogPostDbContext(DbContextOptions<BlogPostDbContext> options) : DbContext(options)
+    public class VivesBlogDbContext(DbContextOptions<VivesBlogDbContext> options) : DbContext(options)
     {
         public DbSet<BlogPost> BlogPosts => Set<BlogPost>();
         public DbSet<Person> People => Set<Person>();
 
-        public void Seed()
+        public async Task Seed()
         {
             People.AddRange(new List<Person>
             {
@@ -20,7 +20,7 @@ namespace VivesBlog.Repository
 
             });
 
-            SaveChanges();
+            await SaveChangesAsync();
 
 
             var emily = People.FirstOrDefault(p => p.FirstName == "Dr. Emily");
@@ -44,7 +44,8 @@ namespace VivesBlog.Repository
                 new() {  Title = "How to Stay Motivated as a Developer", Content = "Overcoming burnout and staying passionate about coding." },
                 new() {  Title = "The Science Behind Sleep and Productivity", Content = "How sleep affects your brain and ways to improve your productivity." }
             });
-            SaveChanges();
+
+            await SaveChangesAsync();
         }
     }
 }

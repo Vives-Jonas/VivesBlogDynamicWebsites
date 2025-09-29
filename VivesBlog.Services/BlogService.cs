@@ -1,50 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using VivesBlog.Model;
 using VivesBlog.Repository;
 
 namespace VivesBlog.Services
 {
-    public class BlogService
+    public class BlogService(VivesBlogDbContext dbContext)
     {
-
-        private readonly BlogPostDbContext _dbContext;
-
-        public BlogService(BlogPostDbContext dbContext)
+        public async Task<IList<BlogPost>> Find()
         {
-            _dbContext = dbContext;
-        }
-
-
-        public IList<BlogPost> Find()
-        {
-            return _dbContext.BlogPosts
+            return await dbContext.BlogPosts
                 .Include(b => b.Author)
-                .ToList();
+                .ToListAsync();
         }
 
-        public BlogPost? Get(int id)
+        public async Task<BlogPost?> Get(int id)
         {
-            return _dbContext.BlogPosts
+            return await dbContext.BlogPosts
                 .Include(b => b.Author)
-                .FirstOrDefault(b => b.Id == id);
+                .FirstOrDefaultAsync(b => b.Id == id);
         }
 
-        public BlogPost? Create(BlogPost blogPost)
+        public async Task<BlogPost?> Create(BlogPost blogPost)
         {
             blogPost.CreatedDate = DateTime.Now;
-            _dbContext.BlogPosts.Add(blogPost);
-            _dbContext.SaveChanges();
+            dbContext.BlogPosts.Add(blogPost);
+            await dbContext.SaveChangesAsync();
             return blogPost;
         }
 
-        public BlogPost? Update(int id, BlogPost blogPost)
+        public async Task<BlogPost?> Update(int id, BlogPost blogPost)
         {
-            var dbBlogPost = Get(id);
+            var dbBlogPost = await Get(id);
 
             if (dbBlogPost == null)
             {
@@ -56,21 +42,21 @@ namespace VivesBlog.Services
             dbBlogPost.Title = blogPost.Title;
             dbBlogPost.Content = blogPost.Content;
 
-            _dbContext.SaveChanges();
+            await dbContext.SaveChangesAsync();
 
             return dbBlogPost;
         }
 
-        public void Delete(int id)
+        public async Task Delete(int id)
         {
-            var blogPost = Get(id);
+            var blogPost = await Get(id);
             if (blogPost == null)
             {
                 return;
             }
 
-            _dbContext.BlogPosts.Remove(blogPost);
-            _dbContext.SaveChanges();
+            dbContext.BlogPosts.Remove(blogPost);
+            await dbContext.SaveChangesAsync();
         }
     }
 }

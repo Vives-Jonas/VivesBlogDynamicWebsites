@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace VivesBlog.Model 
 {
@@ -18,6 +19,7 @@ namespace VivesBlog.Model
 
         
         public int? AuthorId { get; set; }
+        [JsonIgnore]
         public Person? Author { get; set; }
     }
 }

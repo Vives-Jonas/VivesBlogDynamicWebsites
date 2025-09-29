@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace VivesBlog.Model
 {
@@ -19,6 +20,7 @@ namespace VivesBlog.Model
         [EmailAddress]
         public string? Email { get; set; }
 
+        [JsonIgnore]
         public List<BlogPost> BlogPosts { get; set; } = new List<BlogPost>();   
     }
 }
