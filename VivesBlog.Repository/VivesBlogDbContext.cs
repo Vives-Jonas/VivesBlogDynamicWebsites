@@ -17,7 +17,6 @@ namespace VivesBlog.Repository
                 new() {FirstName = "Dr. Rachel", LastName = "Green" },
                 new() {FirstName = "Sophia", LastName = "Williams", Email = "Sophia.Williams@example.com"}
 
-
             });
 
             await SaveChangesAsync();
