@@ -1,6 +1,6 @@
 ﻿@using System.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model BlogPost
+@model ArticleDto
 
 
 <div class="card mb-2 p-2 bg-light">
@@ -13,7 +13,7 @@
         @if (Model.Author is not null)
         {
             <h6 class="card-subtitle mb-2 text-muted p-1">
-                @Model.Author.FirstName @Model.Author.LastName
+                @Model.Author
             </h6>
         }
 

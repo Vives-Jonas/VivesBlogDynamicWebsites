@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using VivesBlog.Mvc.Settings;
 using VivesBlog.Repository;
 using VivesBlog.Services;
 
@@ -6,6 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+
+var appSettings = new AppSettings();
+builder.Configuration.Bind(nameof(AppSettings), appSettings);
+builder.Services.AddSingleton(appSettings);
+
+builder.Services.AddHttpClient("VivesBlogApi", (provider, client) =>
+{
+    client.BaseAddress = new Uri(appSettings.ApiBaseUrl);
+});
+
 
 builder.Services.AddScoped<BlogService>();
 builder.Services.AddScoped<PersonService>();
@@ -28,13 +40,13 @@ if (!app.Environment.IsDevelopment())
 }
 else
 {
-    using var scope = app.Services.CreateScope();
+    //using var scope = app.Services.CreateScope();
 
-    var dbContext = scope.ServiceProvider.GetRequiredService<VivesBlogDbContext>();
-    if (dbContext.Database.IsInMemory())
-    {
-        await dbContext.Seed();
-    }
+    //var dbContext = scope.ServiceProvider.GetRequiredService<VivesBlogDbContext>();
+    //if (dbContext.Database.IsInMemory())
+    //{
+    //    await dbContext.Seed();
+    //}
     
 
     

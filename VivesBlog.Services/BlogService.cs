@@ -1,23 +1,31 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using VivesBlog.Dto;
 using VivesBlog.Model;
 using VivesBlog.Repository;
+using VivesBlog.Services.Extensions;
 
 namespace VivesBlog.Services
 {
     public class BlogService(VivesBlogDbContext dbContext)
     {
-        public async Task<IList<BlogPost>> Find()
+        public async Task<IList<ArticleDto>> Find()
         {
-            return await dbContext.BlogPosts
+            var blogPosts = await dbContext.BlogPosts
                 .Include(b => b.Author)
                 .ToListAsync();
+            return blogPosts.Select(b => b.ToArticleDto()).ToList();
         }
 
-        public async Task<BlogPost?> Get(int id)
+        public async Task<ArticleDto?> Get(int id)
         {
-            return await dbContext.BlogPosts
+            var blogPost = await dbContext.BlogPosts
                 .Include(b => b.Author)
                 .FirstOrDefaultAsync(b => b.Id == id);
+            if (blogPost == null)
+            {
+                return null;
+            }
+            return blogPost.ToArticleDto();
         }
 
         public async Task<BlogPost?> Create(BlogPost blogPost)
@@ -30,7 +38,10 @@ namespace VivesBlog.Services
 
         public async Task<BlogPost?> Update(int id, BlogPost blogPost)
         {
-            var dbBlogPost = await Get(id);
+            var dbBlogPost = await dbContext.BlogPosts
+                .Include(b => b.Author)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
 
             if (dbBlogPost == null)
             {
@@ -49,7 +60,10 @@ namespace VivesBlog.Services
 
         public async Task Delete(int id)
         {
-            var blogPost = await Get(id);
+            var blogPost = await dbContext.BlogPosts
+                .Include(b => b.Author)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
             if (blogPost == null)
             {
                 return;

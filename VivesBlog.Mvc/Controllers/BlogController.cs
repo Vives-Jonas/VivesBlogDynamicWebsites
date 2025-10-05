@@ -1,17 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using VivesBlog.Dto;
 using VivesBlog.Model;
 using VivesBlog.Services;
 
 namespace VivesBlog.Mvc.Controllers
 {
-    public class BlogController(BlogService blogService, PersonService personService) : Controller
+    public class BlogController(BlogService blogService, PersonService personService, IHttpClientFactory httpClientFactory) : Controller
     {
 
         [HttpGet]
+        [Route("Vives-Blog")]
         public async Task<IActionResult> Index()
         {
             ViewData["IsDetail"] = false;
-            var allBlogPosts = await blogService.Find();
+            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
+            var response = await httpClient.GetAsync("Blog");
+            response.EnsureSuccessStatusCode();
+
+            var allBlogPosts = await response.Content.ReadFromJsonAsync<IList<ArticleDto>>();
+            
             return View(allBlogPosts);
         }
 
@@ -19,8 +26,12 @@ namespace VivesBlog.Mvc.Controllers
         public async Task<IActionResult> Detail(int id)
         {
             ViewData["IsDetail"] = true;
-            var blogPost = await blogService.Get(id);
-            
+            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
+            var response = await httpClient.GetAsync($"Blog/{id}");
+            response.EnsureSuccessStatusCode();
+
+            var blogPost = await response.Content.ReadFromJsonAsync<ArticleDto>();
+
             if (blogPost == null)
             {
                 return NotFound($"Blog post with ID {id} not found.");
@@ -46,18 +57,18 @@ namespace VivesBlog.Mvc.Controllers
             return RedirectToAction("Index");
         }
 
-        [HttpGet]
-        public async Task<IActionResult> Edit(int id)
-        {
-            var blogPost = await blogService.Get(id);
-            if (blogPost is null)
-            {
-                return RedirectToAction("Index");
-            }
+        //[HttpGet]
+        //public async Task<IActionResult> Edit(int id)
+        //{
+        //    var blogPost = await blogService.Get(id);
+        //    if (blogPost is null)
+        //    {
+        //        return RedirectToAction("Index");
+        //    }
             
-            return await CreateView("Edit", blogPost);
+        //    return await CreateView("Edit", blogPost);
 
-        }
+        //}
 
         [HttpPost]
         [ValidateAntiForgeryToken]

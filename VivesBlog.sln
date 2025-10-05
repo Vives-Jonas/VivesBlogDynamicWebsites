@@ -21,6 +21,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentatio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VivesBlog.Api", "VivesBlog.Api\VivesBlog.Api.csproj", "{01139F33-93A4-4588-BEB1-3D9A96C6AE74}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VivesBlog.Dto", "VivesBlog.Dto\VivesBlog.Dto.csproj", "{5FC93190-6992-48F9-B5A4-514352347BC2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +49,10 @@ Global
 		{01139F33-93A4-4588-BEB1-3D9A96C6AE74}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01139F33-93A4-4588-BEB1-3D9A96C6AE74}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01139F33-93A4-4588-BEB1-3D9A96C6AE74}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FC93190-6992-48F9-B5A4-514352347BC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FC93190-6992-48F9-B5A4-514352347BC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FC93190-6992-48F9-B5A4-514352347BC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FC93190-6992-48F9-B5A4-514352347BC2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
