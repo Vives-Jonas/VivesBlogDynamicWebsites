@@ -7,10 +7,15 @@ namespace VivesBlog.Sdk
     public class BlogSdkService(IHttpClientFactory httpClientFactory)
     {
         //Find
-        public async Task<IList<ArticleResponse>> Find()
+        public async Task<IList<ArticleResponse>> Find(int? authorId = null)
         {
             var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
             var route = "/api/blog";
+
+            if (authorId.HasValue)
+            {
+                route += $"?authorId={authorId.Value}";
+            }
 
             var response = await httpClient.GetAsync(route);
 

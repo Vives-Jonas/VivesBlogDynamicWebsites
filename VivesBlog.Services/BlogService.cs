@@ -9,10 +9,14 @@ namespace VivesBlog.Services
 {
     public class BlogService(VivesBlogDbContext dbContext)
     {
-        public async Task<IList<ArticleResponse>> Find()
+        public async Task<IList<ArticleResponse>> Find(int? authorId = null)
         {
-            return await dbContext.Articles.Include(a => a.Author).AsNoTracking().ProjectToResponse().ToListAsync();
-
+            return await dbContext.Articles
+                .Include(a => a.Author)
+                .AsNoTracking()
+                .Where(a => !authorId.HasValue || a.AuthorId == authorId.Value)
+                .ProjectToResponse()
+                .ToListAsync();
         }
 
         public async Task<ArticleResponse?> Get(int id)

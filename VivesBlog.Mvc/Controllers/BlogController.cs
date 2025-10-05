@@ -9,10 +9,10 @@ namespace VivesBlog.Mvc.Controllers
 
         [HttpGet]
         [Route("Vives-Blog")]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] int? authorId)
         {
             ViewData["IsDetail"] = false;
-            var result = await blogSdkService.Find();
+            var result = await blogSdkService.Find(authorId);
             
             return View(result);
         }

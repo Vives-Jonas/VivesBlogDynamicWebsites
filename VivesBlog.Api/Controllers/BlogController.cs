@@ -13,9 +13,9 @@ namespace VivesBlog.Api.Controllers
 
         //FIND
         [HttpGet]
-        public async Task<IActionResult> Find()
+        public async Task<IActionResult> Find(int? authorId)
         {
-            var result = await blogService.Find();
+            var result = await blogService.Find(authorId);
             return Ok(result);
         }
 
