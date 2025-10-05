@@ -1,6 +1,6 @@
 ﻿@using System.Web
 @using Microsoft.AspNetCore.Mvc.TagHelpers
-@model ArticleDto
+@model ArticleResponse
 
 
 <div class="card mb-2 p-2 bg-light">
@@ -10,12 +10,20 @@
         <h5 class="card-title">
             @Model.Title
         </h5>
-        @if (Model.Author is not null)
-        {
-            <h6 class="card-subtitle mb-2 text-muted p-1">
-                @Model.Author
-            </h6>
-        }
+
+
+        <h6 class="card-subtitle mb-2 text-muted p-1">
+            @if (!string.IsNullOrEmpty(Model.AuthorName))
+            {
+                <a asp-area="" asp-controller="People" asp-action="Detail" asp-route-id="@Model.AuthorId">
+                    @Model.AuthorName
+                </a>
+            }
+            else
+            {
+                @:No Author
+            }
+        </h6>
 
         <p class="card-text p-1">
             @Model.Content
@@ -43,11 +51,11 @@
                     Details
                 </a>
                 <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
-                <button type="button" 
-                        class="btn btn-danger" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#deleteModal" 
-                        data-id="@Model.Id" 
+                <button type="button"
+                        class="btn btn-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal"
+                        data-id="@Model.Id"
                         data-type="deleteButton"
                         data-title="@HttpUtility.HtmlAttributeEncode(Model.Title)">
                     Delete

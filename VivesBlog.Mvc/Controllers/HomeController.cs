@@ -1,18 +1,18 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 using VivesBlog.Mvc.Models;
-using VivesBlog.Services;
+using VivesBlog.Sdk;
 
 namespace VivesBlog.Mvc.Controllers
 {
-    public class HomeController(ILogger<HomeController> logger, BlogService blogService) : Controller
+    public class HomeController(ILogger<HomeController> logger, BlogSdkService blogSdkService) : Controller
     {
         
 
         public async Task<IActionResult> Index()
         {
-            var blogPosts = await blogService.Find();
-            return View(blogPosts);
+            var result = await blogSdkService.Find();
+            return View(result);
         }
 
         public IActionResult About()

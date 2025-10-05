@@ -1,11 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VivesBlog.Dto;
-using VivesBlog.Model;
-using VivesBlog.Services;
+using VivesBlog.Dto.Requests;
+using VivesBlog.Sdk;
 
 namespace VivesBlog.Mvc.Controllers
 {
-    public class BlogController(BlogService blogService, PersonService personService, IHttpClientFactory httpClientFactory) : Controller
+    public class BlogController(BlogSdkService blogSdkService, PersonSdkService personSdkService) : Controller
     {
 
         [HttpGet]
@@ -13,30 +12,23 @@ namespace VivesBlog.Mvc.Controllers
         public async Task<IActionResult> Index()
         {
             ViewData["IsDetail"] = false;
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var response = await httpClient.GetAsync("Blog");
-            response.EnsureSuccessStatusCode();
-
-            var allBlogPosts = await response.Content.ReadFromJsonAsync<IList<ArticleDto>>();
+            var result = await blogSdkService.Find();
             
-            return View(allBlogPosts);
+            return View(result);
         }
 
         [HttpGet]
         public async Task<IActionResult> Detail(int id)
         {
             ViewData["IsDetail"] = true;
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var response = await httpClient.GetAsync($"Blog/{id}");
-            response.EnsureSuccessStatusCode();
 
-            var blogPost = await response.Content.ReadFromJsonAsync<ArticleDto>();
+            var result = await blogSdkService.Get(id);
 
-            if (blogPost == null)
+            if (result == null)
             {
                 return NotFound($"Blog post with ID {id} not found.");
             }
-            return View(blogPost);
+            return View(result);
         }
 
         [HttpGet]
@@ -47,62 +39,69 @@ namespace VivesBlog.Mvc.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(BlogPost blogPost)
+        public async Task<IActionResult> Create([FromForm] ArticleRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return await CreateView("Create", blogPost);
+                return await CreateView("Create", request);
             }
-            await blogService.Create(blogPost);
+            await blogSdkService.Create(request);
             return RedirectToAction("Index");
         }
 
-        //[HttpGet]
-        //public async Task<IActionResult> Edit(int id)
-        //{
-        //    var blogPost = await blogService.Get(id);
-        //    if (blogPost is null)
-        //    {
-        //        return RedirectToAction("Index");
-        //    }
-            
-        //    return await CreateView("Edit", blogPost);
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var result = await blogSdkService.Get(id);
+            if (result is null)
+            {
+                return RedirectToAction("Index");
+            }
 
-        //}
+            var request = new ArticleRequest()
+            {
+                Title = result.Title,
+                Content = result.Content,
+                AuthorId = result.AuthorId,
+            };
+
+            return await CreateView("Edit", request);
+
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] BlogPost blogPost)
+        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] ArticleRequest request)
         {
             if (!ModelState.IsValid)
             {
-                return await CreateView("Edit", blogPost);
+                return await CreateView("Edit", request);
             }
 
-            await blogService.Update(id, blogPost);
+            await blogSdkService.Update(id, request);
 
             return RedirectToAction("Index");
         }
        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Route("[controller]/Delete/{id:int?}")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        //[Route("[controller]/Delete/{id:int?}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            await blogService.Delete(id);
+            await blogSdkService.Delete(id);
 
             return RedirectToAction("Index");
         }
 
 
-        private async Task<IActionResult> CreateView(string viewName, BlogPost? blogPost = null)
+        private async Task<IActionResult> CreateView(string viewName, ArticleRequest? request = null)
         {
-            ViewBag.Authors = await personService.Find();
-            if (blogPost is null)
+            ViewBag.Authors = await personSdkService.Find();
+            if (request is null)
             {
                 return View(viewName);
             }
-            return View(viewName, blogPost);
+            return View(viewName, request);
             
         }
     }

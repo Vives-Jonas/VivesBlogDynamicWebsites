@@ -1,4 +1,4 @@
-﻿@model IList<ArticleDto>
+﻿@model IList<ArticleResponse>
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -20,9 +20,9 @@
                 @article.Content
             </p>
             <footer>
-                @if (article.Author is not null)
+                @if (article.AuthorName != "No Author")
                 {
-                    @: Written by @article.Author on @article.CreatedDate.ToLongDateString() @article.CreatedDate.ToShortTimeString()
+                    @: Written by @article.AuthorName on @article.CreatedDate.ToLongDateString() @article.CreatedDate.ToShortTimeString()
                 }
             </footer>
         </article>

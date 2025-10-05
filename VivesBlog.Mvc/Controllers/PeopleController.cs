@@ -1,71 +1,92 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VivesBlog.Model;
-using VivesBlog.Services;
+using VivesBlog.Dto.Requests;
+using VivesBlog.Sdk;
 
 namespace VivesBlog.Mvc.Controllers
 {
-    public class PeopleController(PersonService personService) : Controller
+    public class PeopleController(PersonSdkService personSdkService) : Controller
     {
         
         [HttpGet]
         public async Task<IActionResult> Index()
         {
             
-            var people = await personService.Find();
-            return View(people);
+            var result = await personSdkService.Find();
+            return View(result);
         }
 
-       
+        public async Task<IActionResult> Detail(int id)
+        {
+            ViewData["IsDetail"] = true;
+
+            var result = await personSdkService.Get(id);
+
+            if (result == null)
+            {
+                return NotFound($"Person with ID {id} not found.");
+            }
+            return View(result);
+        }
+
 
         [HttpGet]
         public IActionResult Create()
         {
-
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Person person)
+        public async Task<IActionResult> Create(PersonRequest request)
         {
-            await personService.Create(person);
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
+            await personSdkService.Create(request);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
         public async Task<IActionResult> Edit([FromRoute]int id)
         {
-            var person = await personService.Get(id);
-            if (person is null)
+            var result = await personSdkService.Get(id);
+            if (result is null)
             {
                 return RedirectToAction("Index");
             }
-            return View(person);
+
+            var request = new PersonRequest
+            {
+                FirstName = result.FirstName,
+                LastName = result.LastName,
+                Email = result.Email,
+            };
+
+            return View(request);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] Person person)
+        public async Task<IActionResult> Edit([FromRoute] int id, [FromForm] PersonRequest request)
         {
-            await personService.Update(id, person);
+            if (!ModelState.IsValid)
+            {
+                return View(request);
+            }
+
+            await personSdkService.Update(id, request);
+
             return RedirectToAction("Index");
         }
 
-        //[HttpGet]
-        //public IActionResult Delete([FromRoute] int id)
-        //{
-        //    var person = _personService.Get(id);
-        //    if (person is null)
-        //    {
-        //        return RedirectToAction("Index");
-        //    }
-        //    return View(person);
-        //}
+        
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete([FromRoute] int id)
         {
             
-            await personService.Delete(id);
+            await personSdkService.Delete(id);
 
             return RedirectToAction("Index");
         }

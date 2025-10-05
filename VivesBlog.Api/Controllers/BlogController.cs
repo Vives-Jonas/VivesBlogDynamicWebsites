@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
+using VivesBlog.Dto.Requests;
 using VivesBlog.Model;
 using VivesBlog.Services;
 
@@ -14,32 +15,32 @@ namespace VivesBlog.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Find()
         {
-            var articles = await blogService.Find();
-            return Ok(articles);
+            var result = await blogService.Find();
+            return Ok(result);
         }
 
         //GET
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get([FromRoute]  int id)
         {
-            var article = await blogService.Get(id);
-            return Ok(article);
+            var result = await blogService.Get(id);
+            return Ok(result);
         }
 
         //CREATE
         [HttpPost()]
-        public async Task<IActionResult> Create([FromBody] BlogPost blogPost)
+        public async Task<IActionResult> Create([FromBody] ArticleRequest request)
         {
-            var newArticle = await blogService.Create(blogPost);
-            return Ok(newArticle);
+            var result = await blogService.Create(request);
+            return Ok(result);
         }
 
         //UPDATE
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] BlogPost blogPost)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] ArticleRequest request)
         {
-            var updatedArticle = await blogService.Update(id, blogPost);
-            return Ok(updatedArticle);
+            var result = await blogService.Update(id, request);
+            return Ok(result);
         }
 
         //DELETE

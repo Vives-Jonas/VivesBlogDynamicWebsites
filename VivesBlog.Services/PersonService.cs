@@ -1,54 +1,80 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using VivesBlog.Dto.Requests;
+using VivesBlog.Dto.Responses;
 using VivesBlog.Model;
 using VivesBlog.Repository;
+using VivesBlog.Services.Extensions;
 
 namespace VivesBlog.Services
 {
     public class PersonService(VivesBlogDbContext dbContext)
     {
 
-        public async Task<IList<Person>> Find()
+        public async Task<IList<PersonResponse>> Find()
         {
-          return await dbContext.People.ToListAsync();
+          return await dbContext.People.AsNoTracking()
+              .Include(p => p.Articles)
+              .ProjectToResponse()
+              .ToListAsync();
+
         }
 
-        public async Task<Person?> Get(int id)
+        public async Task<PersonResponse?> Get(int id)
         {
-            return await dbContext.People.FirstOrDefaultAsync(p => p.Id == id);
+            return await dbContext.People.AsNoTracking()
+                .Include(p => p.Articles)
+                .ProjectToResponse()
+                .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<Person?> Create(Person person)
+        public async Task<PersonResponse?> Create(PersonRequest request)
         {
-            dbContext.People.Add(person);
-            await dbContext.SaveChangesAsync();
-            return person;
-        }
-
-        public async Task<Person?> Update(int id, Person person)
-        {
-            var dbPerson = await Get(id);
-            if (dbPerson == null)
+            if (string.IsNullOrWhiteSpace(request.FirstName))
+            {
+                return null;
+            }
+            if (string.IsNullOrWhiteSpace(request.LastName))
             {
                 return null;
             }
 
-            dbPerson.FirstName = person.FirstName;
-            dbPerson.LastName = person.LastName;
-            dbPerson.Email = person.Email;
+            var person = new Person
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+            };
+
+            dbContext.People.Add(person);
+            await dbContext.SaveChangesAsync();
+
+            return await Get(person.Id);
+        }
+
+        public async Task<PersonResponse?> Update(int id, PersonRequest request)
+        {
+            var person = await dbContext.People
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (person == null)
+            {
+                return null;
+            }
+
+            person.FirstName = request.FirstName;
+            person.LastName = request.LastName;
+            person.Email = request.Email;
 
             await dbContext.SaveChangesAsync();
 
-            return dbPerson;
+            return await Get(person.Id);
         }
 
         public async Task Delete(int id)
         {
-            var person = await Get(id);
+            var person = await dbContext.People
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (person is null)
             {
                 return;

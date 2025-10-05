@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using VivesBlog.Model;
+using VivesBlog.Dto.Requests;
 using VivesBlog.Services;
 
 namespace VivesBlog.Api.Controllers
@@ -12,8 +12,8 @@ namespace VivesBlog.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Find()
         {
-            var people = await personService.Find();
-            return Ok(people);
+            var result = await personService.Find();
+            return Ok(result);
         }
 
 
@@ -21,26 +21,26 @@ namespace VivesBlog.Api.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Get([FromRoute] int id)
         {
-            var people = await personService.Get(id);
-            return Ok(people);
+            var result = await personService.Get(id);
+            return Ok(result);
         }
 
 
         //CREATE
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Person person)
+        public async Task<IActionResult> Create([FromBody] PersonRequest request)
         {
-            var newPerson = await personService.Create(person);
-            return Ok(newPerson);
+            var result = await personService.Create(request);
+            return Ok(result);
         }
 
 
         //UPDATE
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] Person person)
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] PersonRequest request)
         {
-            var updatedPerson = await personService.Update(id, person);
-            return Ok(updatedPerson);
+            var result = await personService.Update(id, request);
+            return Ok(result);
         }
 
 

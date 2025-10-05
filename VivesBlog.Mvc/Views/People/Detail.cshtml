@@ -1,27 +1,33 @@
-﻿@model IList<PersonResponse>
-@{
-    ViewBag.Title = "People";
-}
+﻿@using System.Web
+@using Microsoft.AspNetCore.Mvc.TagHelpers
 
-<h1>@ViewBag.Title</h1>
-<a asp-action="Create" class="btn btn-primary">Add Person</a>
+@model PersonResponse
 
-<table class="table table-striped mt-3">
-    <thead>
-        <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-            <th>Email</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var person in Model)
-        {
-            <partial name="PersonRowPartial" model="person" />
-        }
-    </tbody>
-</table>
+
+<div class="card mb-3 shadow-sm">
+    <div class="card-body">
+        <h5 class="card-title">@Model.FirstName @Model.LastName</h5>
+        <p class="card-text text-muted">@Model.Email</p>
+        <h6 class="card-subtitle mb-3 text-muted">
+            <span>Number of articles: </span>
+            <a asp-area="" asp-controller="Blog" asp-action="Index" asp-route-authorId="@Model.Id" class="badge bg-primary text-decoration-none">
+                @Model.NumberOfArticles
+            </a>
+        </h6>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-area="" asp-controller="People" asp-action="Index" class="btn btn-outline-secondary">Go Back</a>
+            <a class="btn btn-outline-primary" asp-action="Edit" asp-route-id="@Model.Id">Edit</a>
+            <button type="button" class="btn btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteModal"
+                    data-id="@Model.Id"
+                    data-name="@Model.FirstName @Model.LastName">
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
 
 @section Modal
 {
@@ -33,11 +39,11 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Are you sure you want to delete <span id="Person" ></span>?</p>
+                    <p>Are you sure you want to delete <span id="Person"></span>?</p>
                 </div>
                 <div class="modal-footer">
                     <form method="post" asp-action="Delete">
-                        <input type="hidden" name="Id"/>
+                        <input type="hidden" asp-for="@Model.Id" />
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                         <button type="submit" class="btn btn-danger">Yes</button>
                     </form>

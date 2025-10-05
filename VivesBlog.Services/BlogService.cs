@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using VivesBlog.Dto;
+using VivesBlog.Dto.Requests;
+using VivesBlog.Dto.Responses;
 using VivesBlog.Model;
 using VivesBlog.Repository;
 using VivesBlog.Services.Extensions;
@@ -8,68 +9,70 @@ namespace VivesBlog.Services
 {
     public class BlogService(VivesBlogDbContext dbContext)
     {
-        public async Task<IList<ArticleDto>> Find()
+        public async Task<IList<ArticleResponse>> Find()
         {
-            var blogPosts = await dbContext.BlogPosts
-                .Include(b => b.Author)
-                .ToListAsync();
-            return blogPosts.Select(b => b.ToArticleDto()).ToList();
+            return await dbContext.Articles.Include(a => a.Author).AsNoTracking().ProjectToResponse().ToListAsync();
+
         }
 
-        public async Task<ArticleDto?> Get(int id)
+        public async Task<ArticleResponse?> Get(int id)
         {
-            var blogPost = await dbContext.BlogPosts
-                .Include(b => b.Author)
-                .FirstOrDefaultAsync(b => b.Id == id);
-            if (blogPost == null)
-            {
-                return null;
-            }
-            return blogPost.ToArticleDto();
+            return await dbContext.Articles.Include(a => a.Author).AsNoTracking().ProjectToResponse().FirstOrDefaultAsync(a => a.Id == id);
+
         }
 
-        public async Task<BlogPost?> Create(BlogPost blogPost)
+        public async Task<ArticleResponse?> Create(ArticleRequest request)
         {
-            blogPost.CreatedDate = DateTime.Now;
-            dbContext.BlogPosts.Add(blogPost);
-            await dbContext.SaveChangesAsync();
-            return blogPost;
-        }
-
-        public async Task<BlogPost?> Update(int id, BlogPost blogPost)
-        {
-            var dbBlogPost = await dbContext.BlogPosts
-                .Include(b => b.Author)
-                .FirstOrDefaultAsync(b => b.Id == id);
-
-
-            if (dbBlogPost == null)
+            if (string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))
             {
                 return null;
             }
 
-            dbBlogPost.UpdatedDate = DateTime.Now;
-            dbBlogPost.AuthorId = blogPost.AuthorId;
-            dbBlogPost.Title = blogPost.Title;
-            dbBlogPost.Content = blogPost.Content;
+            var article = new Article
+            {
+                Title = request.Title,
+                Content = request.Content,
+                CreatedDate = DateTime.UtcNow,
+                AuthorId = request.AuthorId
+            };
 
+            
+            dbContext.Articles.Add(article);
+            await dbContext.SaveChangesAsync();
+            return await Get(article.Id);
+        }
+
+        public async Task<ArticleResponse?> Update(int id, ArticleRequest request)
+        {
+            var article = await dbContext.Articles.Include(a => a.Author).FirstOrDefaultAsync(a => a.Id == id);
+
+            if (article == null)
+            {
+                return null;
+            }
+
+            article.Title = request.Title;
+            article.Content = request.Content;
+            article.UpdatedDate = DateTime.UtcNow;
+            article.AuthorId = request.AuthorId;
+
+           
             await dbContext.SaveChangesAsync();
 
-            return dbBlogPost;
+            return await Get(article.Id);
         }
 
         public async Task Delete(int id)
         {
-            var blogPost = await dbContext.BlogPosts
-                .Include(b => b.Author)
-                .FirstOrDefaultAsync(b => b.Id == id);
+            var blogPost = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == id);
+
 
             if (blogPost == null)
             {
                 return;
             }
 
-            dbContext.BlogPosts.Remove(blogPost);
+            dbContext.Articles.Remove(blogPost);
             await dbContext.SaveChangesAsync();
         }
     }

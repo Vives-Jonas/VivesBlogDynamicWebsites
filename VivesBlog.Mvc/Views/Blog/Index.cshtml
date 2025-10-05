@@ -1,4 +1,4 @@
-﻿@model IList<ArticleDto>
+﻿@model IList<ArticleResponse>
 
 
 <a asp-action="Create" class="btn btn-primary">Add BlogPost</a>
@@ -24,7 +24,7 @@
                     Are you sure you want to delete the <span id="blogTitle"></span> blogpost?
                 </div>
                 <div class="modal-footer">
-                    <form method="post" asp-action="DeleteConfirmed">
+                    <form method="post" asp-action="Delete">
                         <input type="hidden" name="Id" />
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                         <button type="submit" class="btn btn-danger">Yes</button>

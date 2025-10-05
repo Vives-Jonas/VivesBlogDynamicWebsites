@@ -1,7 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 using VivesBlog.Mvc.Settings;
-using VivesBlog.Repository;
-using VivesBlog.Services;
+using VivesBlog.Sdk;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,15 +17,15 @@ builder.Services.AddHttpClient("VivesBlogApi", (provider, client) =>
 });
 
 
-builder.Services.AddScoped<BlogService>();
-builder.Services.AddScoped<PersonService>();
+builder.Services.AddScoped<BlogSdkService>();
+builder.Services.AddScoped<PersonSdkService>();
 
-//nieuwe service registreren:
-builder.Services.AddDbContext<VivesBlogDbContext>(options =>
-{
-    //voeg unieke naam toe!
-    options.UseInMemoryDatabase(nameof(VivesBlogDbContext));
-});
+////nieuwe service registreren:
+//builder.Services.AddDbContext<VivesBlogDbContext>(options =>
+//{
+//    //voeg unieke naam toe!
+//    options.UseInMemoryDatabase(nameof(VivesBlogDbContext));
+//});
 
 var app = builder.Build();
 

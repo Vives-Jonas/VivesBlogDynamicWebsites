@@ -14,7 +14,7 @@ builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
 
-//var connectionString = builder.Configuration.GetConnectionString(nameof(PeopleManagerDbContext));
+//var connectionString = builder.Configuration.GetConnectionString(nameof(VivesBlogDbContext));
 
 builder.Services.AddDbContext<VivesBlogDbContext>(options =>
 {
