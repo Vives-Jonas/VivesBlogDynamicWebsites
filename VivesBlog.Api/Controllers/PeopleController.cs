@@ -22,6 +22,10 @@ namespace VivesBlog.Api.Controllers
         public async Task<IActionResult> Get([FromRoute] int id)
         {
             var result = await personService.Get(id);
+            if (result == null)
+            {
+                return NotFound();
+            }
             return Ok(result);
         }
 
@@ -48,8 +52,8 @@ namespace VivesBlog.Api.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            await personService.Delete(id);
-            return Ok();
+            var result = await personService.Delete(id);
+            return Ok(result);
         }
     }
-}
+}   

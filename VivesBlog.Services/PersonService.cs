@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vives.Services.Model;
+using Vives.Services.Model.Extensions;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Dto.Responses;
 using VivesBlog.Model;
@@ -12,7 +14,8 @@ namespace VivesBlog.Services
 
         public async Task<IList<PersonResponse>> Find()
         {
-          return await dbContext.People.AsNoTracking()
+          return await dbContext.People
+              .AsNoTracking()
               .ProjectToResponse()
               .ToListAsync();
 
@@ -20,20 +23,22 @@ namespace VivesBlog.Services
 
         public async Task<PersonResponse?> Get(int id)
         {
-            return await dbContext.People.AsNoTracking()
+            return await dbContext.People
+                .AsNoTracking()
                 .ProjectToResponse()
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<PersonResponse?> Create(PersonRequest request)
+        public async Task<ServiceResult<PersonResponse>> Create(PersonRequest request)
         {
+            var serviceResult = new ServiceResult<PersonResponse>();
             if (string.IsNullOrWhiteSpace(request.FirstName))
             {
-                return null;
+                serviceResult.Required(nameof(request.FirstName));
             }
             if (string.IsNullOrWhiteSpace(request.LastName))
             {
-                return null;
+                serviceResult.Required(nameof(request.FirstName));
             }
 
             var person = new Person
@@ -46,17 +51,33 @@ namespace VivesBlog.Services
             dbContext.People.Add(person);
             await dbContext.SaveChangesAsync();
 
-            return await Get(person.Id);
+            var personResponse = await Get(person.Id);
+            return new ServiceResult<PersonResponse>(personResponse);
         }
 
-        public async Task<PersonResponse?> Update(int id, PersonRequest request)
+        public async Task<ServiceResult<PersonResponse>> Update(int id, PersonRequest request)
         {
             var person = await dbContext.People
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (person == null)
             {
-                return null;
+                return new ServiceResult<PersonResponse>().NotFound(nameof(person));
+            }
+
+            var serviceResult = new ServiceResult<PersonResponse>();
+            if (string.IsNullOrWhiteSpace(request.FirstName))
+            {
+                serviceResult.Required(nameof(request.FirstName));
+            }
+            if (string.IsNullOrWhiteSpace(request.LastName))
+            {
+                serviceResult.Required(nameof(request.FirstName));
+            }
+
+            if (!serviceResult.IsSuccess)
+            {
+                return serviceResult;
             }
 
             person.FirstName = request.FirstName;
@@ -65,20 +86,22 @@ namespace VivesBlog.Services
 
             await dbContext.SaveChangesAsync();
 
-            return await Get(person.Id);
+            var personResponse = await Get(id);
+            return new ServiceResult<PersonResponse>(personResponse);
         }
 
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
             var person = await dbContext.People
                 .FirstOrDefaultAsync(p => p.Id == id);
 
             if (person is null)
             {
-                return;
+                return new ServiceResult().AlreadyRemoved();
             }
             dbContext.People.Remove(person);
             await dbContext.SaveChangesAsync();
+            return new ServiceResult();
         }
     }
 }

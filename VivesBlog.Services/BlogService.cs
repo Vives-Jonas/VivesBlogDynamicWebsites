@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Vives.Services.Model;
+using Vives.Services.Model.Extensions;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Dto.Responses;
 using VivesBlog.Model;
@@ -13,7 +15,6 @@ namespace VivesBlog.Services
         {
             return await dbContext.Articles
                 .AsNoTracking()
-                .Include(a => a.Author)
                 .Where(a => !authorId.HasValue || a.AuthorId == authorId.Value)
                 .ProjectToResponse()
                 .ToListAsync();
@@ -23,17 +24,16 @@ namespace VivesBlog.Services
         {
             return await dbContext.Articles
                 .AsNoTracking()
-                .Include(a => a.Author)
                 .ProjectToResponse()
                 .FirstOrDefaultAsync(a => a.Id == id);
 
         }
 
-        public async Task<ArticleResponse?> Create(ArticleRequest request)
+        public async Task<ServiceResult<ArticleResponse>> Create(ArticleRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))
             {
-                return null;
+                return new ServiceResult<ArticleResponse>().Required(nameof(request.Title));
             }
 
             var article = new Article
@@ -47,16 +47,19 @@ namespace VivesBlog.Services
             
             dbContext.Articles.Add(article);
             await dbContext.SaveChangesAsync();
-            return await Get(article.Id);
+
+            var articleResponse = await Get(article.Id);
+
+            return new ServiceResult<ArticleResponse>(articleResponse);
         }
 
-        public async Task<ArticleResponse?> Update(int id, ArticleRequest request)
+        public async Task<ServiceResult<ArticleResponse>> Update(int id, ArticleRequest request)
         {
             var article = await dbContext.Articles.Include(a => a.Author).FirstOrDefaultAsync(a => a.Id == id);
 
             if (article == null)
             {
-                return null;
+                return new ServiceResult<ArticleResponse>().NotFound(nameof(article));
             }
 
             article.Title = request.Title;
@@ -67,21 +70,25 @@ namespace VivesBlog.Services
            
             await dbContext.SaveChangesAsync();
 
-            return await Get(article.Id);
+            var articleResponse = await Get(article.Id);
+
+            return new ServiceResult<ArticleResponse>(articleResponse);
         }
 
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
-            var blogPost = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == id);
+            var article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == id);
 
 
-            if (blogPost == null)
+            if (article == null)
             {
-                return;
+                return new ServiceResult().AlreadyRemoved();
             }
 
-            dbContext.Articles.Remove(blogPost);
+            dbContext.Articles.Remove(article);
             await dbContext.SaveChangesAsync();
+
+            return new ServiceResult();
         }
     }
 }

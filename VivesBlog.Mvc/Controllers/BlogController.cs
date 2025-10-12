@@ -46,7 +46,15 @@ namespace VivesBlog.Mvc.Controllers
             {
                 return await CreateView("Create", request);
             }
-            await blogSdkService.Create(request);
+            var result = await blogSdkService.Create(request);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+
+                return View(request);
+            }
+
             return RedirectToAction("Index");
         }
 

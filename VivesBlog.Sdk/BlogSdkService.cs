@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using Vives.Services.Model;
+using Vives.Services.Model.Extensions;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Dto.Responses;
 using VivesBlog.Sdk.Settings;
@@ -15,7 +16,10 @@ namespace VivesBlog.Sdk
 
             var response = await httpClient.GetAsync(ApiSettings.BlogByAuthorId(authorId));
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<ArticleResponse>();
+            }
 
             var result = await response.Content.ReadFromJsonAsync<IList<ArticleResponse>>();
 
@@ -28,10 +32,12 @@ namespace VivesBlog.Sdk
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
             
-
             var response = await httpClient.GetAsync(ApiSettings.BlogById(id));
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
 
             var result = await response.Content.ReadFromJsonAsync<ArticleResponse>();
 
@@ -45,10 +51,12 @@ namespace VivesBlog.Sdk
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
            
-
             var response = await httpClient.PostAsJsonAsync(ApiSettings.BlogBase, request);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ServiceResult<ArticleResponse>().ApiError();
+            }
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
 
@@ -61,10 +69,12 @@ namespace VivesBlog.Sdk
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
             
-
             var response = await httpClient.PutAsJsonAsync(ApiSettings.BlogById(id), request);
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ServiceResult<ArticleResponse>().ApiError();
+            }
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
 
@@ -80,9 +90,14 @@ namespace VivesBlog.Sdk
            
             var response = await httpClient.DeleteAsync(ApiSettings.BlogById(id));
 
-            response.EnsureSuccessStatusCode();
+            if (!response.IsSuccessStatusCode)
+            {
+                return new ServiceResult().ApiError();
+            }
 
-            return new ServiceResult();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult>();
+
+            return result ?? new ServiceResult().NoContent();
         }
     }
 }
