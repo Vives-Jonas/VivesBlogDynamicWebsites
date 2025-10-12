@@ -29,6 +29,16 @@ namespace VivesBlog.Services
 
         }
 
+        public async Task<IList<ArticleResponse>> GetRandom(int count = 5)
+        {
+            return await dbContext.Articles
+                .AsNoTracking()
+                .OrderBy(_ => EF.Functions.Random())
+                .Take(count)
+                .ProjectToResponse()
+                .ToListAsync();
+        }
+
         public async Task<ServiceResult<ArticleResponse>> Create(ArticleRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.Title) || string.IsNullOrWhiteSpace(request.Content))

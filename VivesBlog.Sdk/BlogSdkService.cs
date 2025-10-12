@@ -46,6 +46,24 @@ namespace VivesBlog.Sdk
         }
 
 
+        //Get Random
+        public async Task<IList<ArticleResponse>> GetRandom(int count = 5)
+        {
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+
+            var response = await httpClient.GetAsync($"{ApiSettings.BlogRandom(count)}");
+
+            if (!response.IsSuccessStatusCode)
+            {
+                return new List<ArticleResponse>();
+            }
+
+            var result = await response.Content.ReadFromJsonAsync<IList<ArticleResponse>>();
+
+            return result ?? new List<ArticleResponse>();
+        }
+
+
         //Create
         public async Task<ServiceResult<ArticleResponse>> Create(ArticleRequest request)
         {

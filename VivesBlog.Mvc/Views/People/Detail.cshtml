@@ -10,7 +10,7 @@
         <p class="card-text text-muted">@Model.Email</p>
         <h6 class="card-subtitle mb-3 text-muted">
             <span>Number of articles: </span>
-            <a asp-area="" asp-controller="Blog" asp-action="Index" asp-route-authorId="@Model.Id" class="badge bg-primary text-decoration-none">
+            <a asp-area="" asp-controller="Blog" asp-action="Index" asp-route-authorId="@Model.Id" class="badge bg-primary p-3 text-decoration-none">
                 @Model.NumberOfArticles
             </a>
         </h6>

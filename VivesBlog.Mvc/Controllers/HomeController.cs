@@ -9,7 +9,7 @@ namespace VivesBlog.Mvc.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var result = await blogSdkService.Find();
+            var result = await blogSdkService.GetRandom();
             return View(result);
         }
 

@@ -29,6 +29,15 @@ namespace VivesBlog.Api.Controllers
             return Ok(result);
         }
 
+        
+        //GET RANDOM
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandom([FromQuery] int count = 5)
+        {
+            var result = await blogService.GetRandom(count);
+            return Ok(result);
+        }
+
         //CREATE
         [HttpPost()]
         public async Task<IActionResult> Create([FromBody] ArticleRequest request)
