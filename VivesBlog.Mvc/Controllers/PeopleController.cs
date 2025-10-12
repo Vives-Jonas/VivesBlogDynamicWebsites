@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VivesBlog.Dto.Requests;
+using VivesBlog.Mvc.Extensions;
 using VivesBlog.Sdk;
 
 namespace VivesBlog.Mvc.Controllers
@@ -17,8 +18,7 @@ namespace VivesBlog.Mvc.Controllers
 
         public async Task<IActionResult> Detail(int id)
         {
-            ViewData["IsDetail"] = true;
-
+            
             var result = await personSdkService.Get(id);
 
             if (result == null)
@@ -44,8 +44,14 @@ namespace VivesBlog.Mvc.Controllers
                 return View(request);
             }
 
-            await personSdkService.Create(request);
+            var result = await personSdkService.Create(request);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View(request);
+            }
             return RedirectToAction("Index");
+            
         }
 
         [HttpGet]
@@ -75,7 +81,13 @@ namespace VivesBlog.Mvc.Controllers
                 return View(request);
             }
 
-            await personSdkService.Update(id, request);
+            var result = await personSdkService.Update(id, request);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View(request);
+            }
 
             return RedirectToAction("Index");
         }
@@ -83,10 +95,15 @@ namespace VivesBlog.Mvc.Controllers
         
 
         [HttpPost]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromForm] int id)
         {
             
-            await personSdkService.Delete(id);
+            var result = await personSdkService.Delete(id);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View();
+            }
 
             return RedirectToAction("Index");
         }

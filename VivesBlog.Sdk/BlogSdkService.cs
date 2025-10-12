@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Json;
+using Vives.Services.Model;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Dto.Responses;
+using VivesBlog.Sdk.Settings;
 
 namespace VivesBlog.Sdk
 {
@@ -9,15 +11,9 @@ namespace VivesBlog.Sdk
         //Find
         public async Task<IList<ArticleResponse>> Find(int? authorId = null)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = "/api/blog";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
 
-            if (authorId.HasValue)
-            {
-                route += $"?authorId={authorId.Value}";
-            }
-
-            var response = await httpClient.GetAsync(route);
+            var response = await httpClient.GetAsync(ApiSettings.BlogByAuthorId(authorId));
 
             response.EnsureSuccessStatusCode();
 
@@ -30,10 +26,10 @@ namespace VivesBlog.Sdk
         //Get
         public async Task<ArticleResponse?> Get(int id)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = $"/api/blog/{id}";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+            
 
-            var response = await httpClient.GetAsync(route);
+            var response = await httpClient.GetAsync(ApiSettings.BlogById(id));
 
             response.EnsureSuccessStatusCode();
 
@@ -45,47 +41,48 @@ namespace VivesBlog.Sdk
 
 
         //Create
-        public async Task<ArticleResponse?> Create(ArticleRequest request)
+        public async Task<ServiceResult<ArticleResponse>> Create(ArticleRequest request)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = "/api/blog";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+           
 
-            var response = await httpClient.PostAsJsonAsync(route, request);
+            var response = await httpClient.PostAsJsonAsync(ApiSettings.BlogBase, request);
 
             response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadFromJsonAsync<ArticleResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
 
-            return result;
+            return result ?? new ServiceResult<ArticleResponse>();
 
         }
 
         //Update
-        public async Task<ArticleResponse?> Update(int id, ArticleRequest request)
+        public async Task<ServiceResult<ArticleResponse>> Update(int id, ArticleRequest request)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = $"/api/blog/{id}";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+            
 
-            var response = await httpClient.PutAsJsonAsync(route, request);
+            var response = await httpClient.PutAsJsonAsync(ApiSettings.BlogById(id), request);
 
             response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadFromJsonAsync<ArticleResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
 
-            return result;
+            return result ?? new ServiceResult<ArticleResponse>();
 
         }
 
 
         //Delete
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = $"/api/blog/{id}";
-
-            var response = await httpClient.DeleteAsync(route);
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+           
+            var response = await httpClient.DeleteAsync(ApiSettings.BlogById(id));
 
             response.EnsureSuccessStatusCode();
+
+            return new ServiceResult();
         }
     }
 }

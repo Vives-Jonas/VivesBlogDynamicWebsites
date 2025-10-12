@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VivesBlog.Dto.Requests;
+using VivesBlog.Mvc.Extensions;
 using VivesBlog.Sdk;
 
 namespace VivesBlog.Mvc.Controllers
@@ -78,17 +79,27 @@ namespace VivesBlog.Mvc.Controllers
                 return await CreateView("Edit", request);
             }
 
-            await blogSdkService.Update(id, request);
+            var result = await blogSdkService.Update(id, request);
+
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return await CreateView("Edit", request);
+            }
 
             return RedirectToAction("Index");
         }
        
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //[Route("[controller]/Delete/{id:int?}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await blogSdkService.Delete(id);
+            var result = await blogSdkService.Delete(id);
+            if (!result.IsSuccess)
+            {
+                ModelState.AddServiceMessages(result.Messages);
+                return View();
+            }
 
             return RedirectToAction("Index");
         }

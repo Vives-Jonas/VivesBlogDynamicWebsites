@@ -1,6 +1,8 @@
 ﻿using System.Net.Http.Json;
+using Vives.Services.Model;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Dto.Responses;
+using VivesBlog.Sdk.Settings;
 
 namespace VivesBlog.Sdk
 {
@@ -9,10 +11,10 @@ namespace VivesBlog.Sdk
         //Find
         public async Task<IList<PersonResponse>> Find()
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = "/api/people";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+            
 
-            var response = await httpClient.GetAsync(route);
+            var response = await httpClient.GetAsync(ApiSettings.PeopleBase);
 
             response.EnsureSuccessStatusCode();
 
@@ -25,10 +27,9 @@ namespace VivesBlog.Sdk
         //Get
         public async Task<PersonResponse?> Get(int id)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = $"/api/people/{id}";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
 
-            var response = await httpClient.GetAsync(route);
+            var response = await httpClient.GetAsync(ApiSettings.PersonById(id));
 
             response.EnsureSuccessStatusCode();
 
@@ -40,47 +41,47 @@ namespace VivesBlog.Sdk
 
 
         //Create
-        public async Task<PersonResponse?> Create(PersonRequest request)
+        public async Task<ServiceResult<PersonResponse>> Create(PersonRequest request)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = "/api/people";
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+            
 
-            var response = await httpClient.PostAsJsonAsync(route, request);
+            var response = await httpClient.PostAsJsonAsync(ApiSettings.PeopleBase, request);
 
             response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadFromJsonAsync<PersonResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResponse>>();
 
-            return result;
+            return result ?? new ServiceResult<PersonResponse>();
 
         }
 
         //Update
-        public async Task<PersonResponse?> Update(int id, PersonRequest request)
+        public async Task<ServiceResult<PersonResponse>> Update(int id, PersonRequest request)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = $"/api/people/{id}";
-
-            var response = await httpClient.PutAsJsonAsync(route, request);
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+            
+            var response = await httpClient.PutAsJsonAsync(ApiSettings.PersonById(id), request);
 
             response.EnsureSuccessStatusCode();
 
-            var result = await response.Content.ReadFromJsonAsync<PersonResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResponse>>();
 
-            return result;
+            return result ?? new ServiceResult<PersonResponse>();
 
         }
 
 
         //Delete
-        public async Task Delete(int id)
+        public async Task<ServiceResult> Delete(int id)
         {
-            var httpClient = httpClientFactory.CreateClient("VivesBlogApi");
-            var route = $"/api/people/{id}";
-
-            var response = await httpClient.DeleteAsync(route);
+            var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
+           
+            var response = await httpClient.DeleteAsync(ApiSettings.PersonById(id));
 
             response.EnsureSuccessStatusCode();
+
+            return new ServiceResult();
         }
     }
 }

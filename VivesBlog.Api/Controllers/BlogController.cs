@@ -1,7 +1,6 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using VivesBlog.Dto.Requests;
-using VivesBlog.Model;
 using VivesBlog.Services;
 
 namespace VivesBlog.Api.Controllers

@@ -4,12 +4,10 @@ namespace VivesBlog.Dto.Requests
 {
     public class PersonRequest
     {
-        [Required(ErrorMessage = "First Name is required")]
-        [Display(Name = "First Name")]
+        [Required]
         public required string FirstName { get; set; }
 
-        [Required(ErrorMessage = "Last Name is required")]
-        [Display(Name = "Last Name")]
+        [Required]
         public required string LastName { get; set; }
 
         [EmailAddress]

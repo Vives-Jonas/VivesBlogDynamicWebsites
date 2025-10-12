@@ -1,31 +1,15 @@
 using Microsoft.EntityFrameworkCore;
+using VivesBlog.Api.Installers;
 using VivesBlog.Repository;
-using VivesBlog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
-
-//Add Swagger
-builder.Services.AddSwaggerGen();
-
-
-//var connectionString = builder.Configuration.GetConnectionString(nameof(VivesBlogDbContext));
-
-builder.Services.AddDbContext<VivesBlogDbContext>(options =>
-{
-    options.UseInMemoryDatabase(nameof(VivesBlogDbContext));
-    //options.UseSqlServer(connectionString);
-});
-
-
-
-builder.Services.AddScoped<BlogService>();
-builder.Services.AddScoped<PersonService>();
+builder
+    .InstallRestApi()
+    .InstallDatabase()
+    .InstallSwagger()
+    .InstallServices();
 
 var app = builder.Build();
 

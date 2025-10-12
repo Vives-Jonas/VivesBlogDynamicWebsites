@@ -13,7 +13,6 @@ namespace VivesBlog.Services
         public async Task<IList<PersonResponse>> Find()
         {
           return await dbContext.People.AsNoTracking()
-              .Include(p => p.Articles)
               .ProjectToResponse()
               .ToListAsync();
 
@@ -22,7 +21,6 @@ namespace VivesBlog.Services
         public async Task<PersonResponse?> Get(int id)
         {
             return await dbContext.People.AsNoTracking()
-                .Include(p => p.Articles)
                 .ProjectToResponse()
                 .FirstOrDefaultAsync(p => p.Id == id);
         }

@@ -1,30 +1,34 @@
 ﻿@model IList<ArticleResponse>
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Top Posts";
 }
 
 <section>
-    <header>
-        <div class="text-center">
-            <h1 class="display-4">Articles</h1>
-            <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-        </div>
+    <header class="mb-4">
+        <h1>@ViewData["Title"]</h1>
     </header>
-    @foreach (var article in Model)
-    {
-        <article style="margin:10px;border:solid 1px black;">
-            <header>
-                <h2>@article.Title</h2>
-            </header>
-            <p>
-                @article.Content
-            </p>
-            <footer>
-                @if (article.AuthorName != "No Author")
-                {
-                    @: Written by @article.AuthorName on @article.CreatedDate.ToLongDateString() @article.CreatedDate.ToShortTimeString()
-                }
-            </footer>
-        </article>
-    }
+    <div class="row row-cols-1 g-4">
+        @foreach (var article in Model)
+        {
+            <div class="col">
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">@article.Title</h5>
+                        <p class="card-text text-muted">@article.Content</p>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        @if (article.AuthorName is not null)
+                        {
+                            <small class="text-body-secondary">
+                                Written by <a asp-controller="People" asp-action="Detail" asp-route-id="@article.AuthorId">@article.AuthorName</a> on
+                                @article.CreatedDate.ToShortDateString()
+                                at @article.CreatedDate.ToShortTimeString()
+                            </small>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </section>
+

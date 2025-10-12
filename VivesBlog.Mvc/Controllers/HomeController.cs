@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
-using VivesBlog.Mvc.Models;
 using VivesBlog.Sdk;
 
 namespace VivesBlog.Mvc.Controllers
@@ -15,20 +13,5 @@ namespace VivesBlog.Mvc.Controllers
             return View(result);
         }
 
-        public IActionResult About()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
     }
 }

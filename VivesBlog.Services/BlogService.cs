@@ -12,8 +12,8 @@ namespace VivesBlog.Services
         public async Task<IList<ArticleResponse>> Find(int? authorId = null)
         {
             return await dbContext.Articles
-                .Include(a => a.Author)
                 .AsNoTracking()
+                .Include(a => a.Author)
                 .Where(a => !authorId.HasValue || a.AuthorId == authorId.Value)
                 .ProjectToResponse()
                 .ToListAsync();
@@ -21,7 +21,11 @@ namespace VivesBlog.Services
 
         public async Task<ArticleResponse?> Get(int id)
         {
-            return await dbContext.Articles.Include(a => a.Author).AsNoTracking().ProjectToResponse().FirstOrDefaultAsync(a => a.Id == id);
+            return await dbContext.Articles
+                .AsNoTracking()
+                .Include(a => a.Author)
+                .ProjectToResponse()
+                .FirstOrDefaultAsync(a => a.Id == id);
 
         }
 
