@@ -8,6 +8,7 @@ namespace VivesBlog.Api.Installers
         {
             builder.Services.AddScoped<BlogService>();
             builder.Services.AddScoped<PersonService>();
+            builder.Services.AddScoped<IdentityService>();
 
             return builder;
         }

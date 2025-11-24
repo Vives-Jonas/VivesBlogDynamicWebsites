@@ -1,11 +1,15 @@
 ﻿namespace Vives.Services.Model
 {
-    public class ServiceResult<T> : ServiceResult
+    public class ServiceResult<TData> : ServiceResult
     {
-        public ServiceResult(T? data = default)
+        public ServiceResult(TData? data = default)
         {
             Data = data;
         }
-        public T? Data { get; set; }
+
+        public TData? Data {
+            get;
+            set;
+        }
     }
 }

@@ -7,9 +7,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder
     .InstallRestApi()
-    .InstallDatabase()
     .InstallSwagger()
-    .InstallServices();
+    .InstallDatabase()
+    .InstallServices()
+    .InstallAuthentication()
+    .InstallIdentity();
 
 var app = builder.Build();
 

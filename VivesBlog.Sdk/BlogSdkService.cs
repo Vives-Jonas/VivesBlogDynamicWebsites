@@ -73,7 +73,7 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult<ArticleResponse>().ApiError();
+                return new ServiceResult<ArticleResponse>();
             }
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
@@ -91,7 +91,7 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult<ArticleResponse>().ApiError();
+                return new ServiceResult<ArticleResponse>();
             }
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
@@ -110,7 +110,7 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult().ApiError();
+                return new ServiceResult();
             }
 
             var result = await response.Content.ReadFromJsonAsync<ServiceResult>();

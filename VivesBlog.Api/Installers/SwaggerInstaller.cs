@@ -1,4 +1,4 @@
-﻿using Microsoft.OpenApi.Models;
+﻿using Microsoft.OpenApi;
 
 namespace VivesBlog.Api.Installers
 {
@@ -12,6 +12,19 @@ namespace VivesBlog.Api.Installers
 
             builder.Services.AddSwaggerGen(options =>
             {
+                options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. \n\nExample: Authorization: Bearer {token}",
+                    Type = SecuritySchemeType.Http,
+                    Scheme = "bearer",
+                    BearerFormat = "JWT"
+                });
+
+                options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
+                {
+                    [new OpenApiSecuritySchemeReference("bearer", document)] = []
+                });
+
                 options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "Vives Blog API",

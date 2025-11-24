@@ -1,0 +1,8 @@
+﻿namespace VivesBlog.Api.Settings
+{
+    public class JwtSettings
+    {
+        public required string Secret { get; set; }
+        public TimeSpan ExpirationPeriod { get; set; }
+    }
+}

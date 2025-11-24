@@ -1,15 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using VivesBlog.Model;
 
 namespace VivesBlog.Repository
 {
-    public class VivesBlogDbContext(DbContextOptions<VivesBlogDbContext> options) : DbContext(options)
+    public class VivesBlogDbContext(DbContextOptions<VivesBlogDbContext> options) : IdentityDbContext(options)
     {
         public DbSet<Article> Articles => Set<Article>();
         public DbSet<Person> People => Set<Person>();
 
         public async Task Seed()
         {
+
+            AddDefaultIdentityUser();
+
+
             People.AddRange(new List<Person>
             {
                 new() {FirstName = "Dr. Emily", LastName=" Carter" },
@@ -131,6 +137,22 @@ namespace VivesBlog.Repository
             });
 
             await SaveChangesAsync();
+        }
+
+        private void AddDefaultIdentityUser()
+        {
+            var email = "jonas@example.be";
+
+            var identityUser = new IdentityUser
+            {
+                UserName = email,
+                NormalizedUserName = email.ToUpper(),
+                Email = email,
+                NormalizedEmail = email.ToUpper(),
+                PasswordHash = "AQAAAAIAAYagAAAAEJb8pZkj/vdlh+joOkzrHJhUYXu+6JoLwiqL+Cs1OkviTiQKtM/dkPD2TcZ/JFUtPg==" // Test123$
+            };
+
+            Users.Add(identityUser);
         }
     }
 }
