@@ -1,52 +1,57 @@
 ﻿@page "/"
-@using VivesBlog.Sdk;
-@using VivesBlog.Dto.Responses;
 
+
+@inject NavigationManager NavigationManager
 @inject BlogSdkService BlogSdkService
 
-<section>
-    <header class="mb-4">
-        <PageTitle>Top Posts</PageTitle>
-    </header>
+
+
+<PageTitle>Top Posts</PageTitle>
+
 @if (TopArticles is null)
 {
-        <p><em>Loading...</em></p>
+    <p><em>Loading...</em></p>
 }
 else
 {
-    
-        <div class="row row-cols-1 g-4">
+    <MudGrid Spacing="6">
+        @foreach (var article in TopArticles)
+        {
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">@article.Title</MudText>
+                        <MudText Typo="Typo.body1">@article.Content</MudText>
+                        @if (article.AuthorName is not null)
+                        {
+                            <MudText Typo="Typo.body2">
+                                Written by <MudLink Href="@($"/people/details/{article.AuthorId}")">@article.AuthorName</MudLink>
+                                on
+                                @article.CreatedDate.ToShortDateString()
+                                at @article.CreatedDate.ToShortTimeString()
+                            </MudText>
+                        }
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary">Details</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
 
-            @foreach (var article in TopArticles)
-            {
-                <div class="col">
-                    <div class="card shadow-sm border-0 h-100">
-                        <div class="card-body">
-                            <h5 class="card-title">@article.Title</h5>
-                            <p class="card-text text-muted">@article.Content</p>
-                        </div>
-                        <div class="card-footer bg-white border-0">
-                            @if (article.AuthorName is not null)
-                            {
-                                <small class="text-body-secondary">
-                                    Written by <a asp-controller="People" asp-action="Detail" asp-route-id="@article.AuthorId">@article.AuthorName</a> on
-                                    @article.CreatedDate.ToShortDateString()
-                                    at @article.CreatedDate.ToShortTimeString()
-                                </small>
-                            }
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    
+
+
+
 }
-</section>
+
 
 @code {
     private IList<ArticleResponse>? TopArticles { get; set; }
     protected override async Task OnInitializedAsync()
     {
-        TopArticles = await BlogSdkService.GetRandom();
+        TopArticles = await BlogSdkService.GetRandom(7);
     }
+
+
 }

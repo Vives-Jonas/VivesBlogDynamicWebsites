@@ -1,0 +1,32 @@
+﻿@using VivesBlog.Dto.Requests
+
+@inject IDialogService DialogService
+
+<MudDialog>
+    <TitleContent>@(IsEdit ? "Edit Post" : "New Post")</TitleContent>
+
+    <DialogContent>
+        <MudTextField @bind-Value="Request.Title" Label="Title" FullWidth="true" />
+        <MudTextField @bind-Value="Request.Content" Label="Content" FullWidth="true" Lines="5" />
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit">Save</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [Parameter]
+    public ArticleRequest? Request { get; set; }
+
+    [Parameter] 
+    public bool IsEdit { get; set; }
+
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; }
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(true));
+
+    private void Cancel() => MudDialog.Cancel();
+}
