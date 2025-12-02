@@ -1,0 +1,57 @@
+﻿@page "/"
+
+
+@inject NavigationManager NavigationManager
+@inject BlogSdkService BlogSdkService
+
+
+
+<PageTitle>Top Posts</PageTitle>
+
+@if (TopArticles is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <MudGrid Spacing="6">
+        @foreach (var article in TopArticles)
+        {
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">@article.Title</MudText>
+                        <MudText Typo="Typo.body1">@article.Content</MudText>
+                        @if (article.AuthorName is not null)
+                        {
+                            <MudText Typo="Typo.body2">
+                                Written by <MudLink Href="@($"/people/details/{article.AuthorId}")">@article.AuthorName</MudLink>
+                                on
+                                @article.CreatedDate.ToShortDateString()
+                                at @article.CreatedDate.ToShortTimeString()
+                            </MudText>
+                        }
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary">Details</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+
+
+
+}
+
+
+@code {
+    private IList<ArticleResponse>? TopArticles { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        TopArticles = await BlogSdkService.GetRandom(7);
+    }
+
+
+}

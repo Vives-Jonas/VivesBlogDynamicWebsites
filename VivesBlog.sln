@@ -35,6 +35,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Vives.Security", "Vives.Sec
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppHost", "AppHost\AppHost.csproj", "{E5F0B095-C173-4AB6-B3C5-F8A55485301C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VivesBlog.Blazor", "VivesBlog.Blazor\VivesBlog.Blazor.csproj", "{2DF796D8-C7AE-75D4-9711-E0F43460DA20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -81,6 +83,10 @@ Global
 		{E5F0B095-C173-4AB6-B3C5-F8A55485301C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5F0B095-C173-4AB6-B3C5-F8A55485301C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5F0B095-C173-4AB6-B3C5-F8A55485301C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DF796D8-C7AE-75D4-9711-E0F43460DA20}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DF796D8-C7AE-75D4-9711-E0F43460DA20}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DF796D8-C7AE-75D4-9711-E0F43460DA20}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DF796D8-C7AE-75D4-9711-E0F43460DA20}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -95,6 +101,7 @@ Global
 		{B9477E1A-CF09-4CB5-9F0E-3FA4E23531F1} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{AD9A6366-10B0-40EE-B3EB-26775F60E624} = {59A5C663-0128-4CEC-931D-F15A470D25F9}
 		{9D7CCA3B-5C29-4F7B-9EE9-13A51857E7C4} = {59A5C663-0128-4CEC-931D-F15A470D25F9}
+		{2DF796D8-C7AE-75D4-9711-E0F43460DA20} = {D8C3E48A-1CCA-40D0-8628-B431C4DBB42E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {DCDCB1FB-90F9-4B50-B49A-D499C7F3A44E}

@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Vives.Security\Vives.Security.csproj" />
     <ProjectReference Include="..\Vives.Services.Model\Vives.Services.Model.csproj" />
     <ProjectReference Include="..\VivesBlog.Dto\VivesBlog.Dto.csproj" />
   </ItemGroup>

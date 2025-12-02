@@ -1,0 +1,116 @@
+﻿@page "/blog"
+@using VivesBlog.Dto.Requests
+
+
+@inject BlogSdkService BlogSdkService
+@inject IDialogService DialogService
+
+<PageTitle>Blog</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large">
+
+    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <MudText Typo="Typo.h4">Blog Posts</MudText>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddPost">
+            Add New Post
+        </MudButton>
+    </MudStack>
+    @if (Articles is null)
+    {
+        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (!Articles.Any())
+    {
+        <MudText>No blog posts available. Click "Add New Post" to create one.</MudText>
+    }
+    else
+    {
+
+
+        <MudGrid>
+            @foreach (var post in Articles)
+            {
+                <MudItem xs="12" sm="6" md="4">
+                    <MudCard Class="mb-4">
+
+                        <MudCardContent>
+                            <MudText Typo="Typo.h6">@post.Title</MudText>
+                            <MudText>@post.Content</MudText>
+                        </MudCardContent>
+
+                        <MudCardActions>
+                            @* <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => EditPost(post))">
+                                Edit
+                            </MudButton> *@
+
+                            <MudButton Size="Size.Small" Color="Color.Error" OnClick="@(() => DeletePost(post.Id))">
+                                Delete
+                            </MudButton>
+                        </MudCardActions>
+
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+    @code {
+    private IList<ArticleResponse>? Articles { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await BlogSdkService.Find();
+        Articles = result;
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task AddPost()
+    {
+        var parameters = new DialogParameters
+        {
+            { "Request", new ArticleRequest { Title = "", Content = "" } },
+            { "IsEdit", false }
+        };
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = await DialogService.ShowAsync<ArticleDialog>("New Post", parameters, options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await BlogSdkService.Create((ArticleRequest)result.Data);
+            Articles = await BlogSdkService.Find();
+            StateHasChanged();
+        }
+    }
+
+    // private async Task EditPost(ArticleResponse post)
+    // {
+    //     var parameters = new DialogParameters
+    //     {
+    //         { "Model", new ArticleRequest {  Title = post.Title, Content = post.Content } },
+    //         { "IsEdit", true }
+    //     };
+    //     var options = new DialogOptions { CloseOnEscapeKey = true };
+
+    //     var dialog = await DialogService.ShowAsync<ArticleDialog>("Edit Post", parameters, options);
+    //     var result = await dialog.Result;
+
+    //     if (!result.Canceled)
+    //     {
+    //         await BlogSdkService.Update((ArticleRequest)result.Data);
+    //         Articles = await BlogSdkService.Find();
+    //         StateHasChanged();
+    //     }
+    // }
+
+    private async Task DeletePost(int id)
+    {
+        await BlogSdkService.Delete(id);
+        Articles = await BlogSdkService.Find();
+        StateHasChanged();
+    }
+
+}

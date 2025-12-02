@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\VivesBlog.Api\VivesBlog.Api.csproj" />
+    <ProjectReference Include="..\VivesBlog.Blazor\VivesBlog.Blazor.csproj" />
     <ProjectReference Include="..\VivesBlog.Mvc\VivesBlog.Mvc.csproj" />
   </ItemGroup>
 
