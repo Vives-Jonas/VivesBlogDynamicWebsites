@@ -1,0 +1,150 @@
+﻿@using VivesBlog.Dto.Requests
+
+@inject PersonSdkService PersonSdkService
+@inject BlogSdkService BlogSdkService
+
+@inject NavigationManager NavigationManager
+@inject ISnackbar Snackbar
+
+
+<MudDialog>
+    <TitleContent>
+        <MudText Typo="Typo.h6">Add New Article</MudText>
+    </TitleContent>
+    <DialogContent>
+        @if (Model is null || Authors is null)
+        {
+            <MudSkeleton>
+                <MudSkeleton Width="60%" Height="28px" Class="mb-2" />
+                <MudSkeleton Width="90%" Height="14px" Class="mb-1" />
+                <MudSkeleton Width="80%" Height="14px" Class="mb-1" />
+                <MudSkeleton Width="95%" Height="14px" Class="mb-2" />
+            </MudSkeleton>
+            
+        }
+        else
+        {
+
+            <EditForm EditContext="@editContext" OnValidSubmit="OnValidSubmit">
+                <ValidationSummary />
+                <DataAnnotationsValidator />
+
+                <MudTextField Label="Title"
+                              @bind-Value="Model.Title"
+                              For="@(() => Model.Title)"
+                              Required="true"
+                              RequiredError="Title is required"
+                              Variant="Variant.Outlined"
+                              Class="mb-4" />
+
+                <MudTextField Label="Content"
+                              @bind-Value="Model.Content"
+                              For="@(() => Model.Content)"
+                              Lines="6"
+                              Required="true"
+                              RequiredError="Content is required"
+                              Variant="Variant.Outlined"
+                              Class="mb-4" />
+
+                <!-- Author -->
+                <div>
+                    <label>
+                        Author:
+
+                        <InputSelect @bind-Value="Model.AuthorId">
+                            <option value="No author"></option>
+                            @foreach (var author in Authors)
+                            {
+                                <option value="@author.Id">@author.FirstName @author.LastName</option>
+                            }
+                        </InputSelect>
+
+                    </label>
+                </div>            
+
+            </EditForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="Submit">Create</MudButton>
+    </DialogActions>
+</MudDialog>
+
+
+
+@code {
+
+    [CascadingParameter]
+    IMudDialogInstance? MudDialog { get; set; }
+
+    private IList<PersonResult>? Authors { get; set; }
+    private ArticleRequest? Model { get; set; }
+
+    private EditContext? editContext;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model = new ArticleRequest
+        {
+            Title = string.Empty,
+            Content = string.Empty,
+        };
+
+        editContext = new EditContext(Model);
+
+        await LoadAuthors();
+        await base.OnInitializedAsync();
+    }
+
+    private async Task LoadAuthors()
+    {
+        var result = await PersonSdkService.Find(new Vives.Services.Model.Paging());
+        Authors = result.Data.ToList();
+    }
+
+    private void Cancel()
+    {
+        MudDialog?.Cancel();
+    }
+
+    private async Task Submit()
+    {
+        if (Model is null)
+        {
+            return;
+        }
+
+        if (editContext is null)
+        {
+            Snackbar.Add("Form not initialized.", Severity.Warning);
+            return;
+        }
+
+        // run validation programmatically because the submit button sits outside the EditForm
+        if (!editContext.Validate())
+        {
+            Snackbar.Add("Please fix the validation errors.", Severity.Error);
+            return;
+        }
+
+        var result = await BlogSdkService.Create(Model);
+
+        if (!result.IsSuccess)
+        {
+            var errors = string.Join("", result.Messages.Select(m => $"<li>{m.Description}</li>"));
+            Snackbar.Add(new MarkupString($"<div>Failed to create Post</div><ul>{errors}</ul>"), Severity.Error);
+            return;
+        }
+
+        Snackbar.Add("Post created successfully!", Severity.Success);
+        MudDialog?.Close(DialogResult.Ok(result));
+    }
+
+    private async Task OnValidSubmit()
+    {
+        await Submit();
+    }
+}
+   
+

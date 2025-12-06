@@ -1,13 +1,13 @@
-﻿using VivesBlog.Dto.Responses;
+﻿using VivesBlog.Dto.Results;
 using VivesBlog.Model;
 
 namespace VivesBlog.Services.Extensions
 {
     public static class ProjectionExtensions
     {
-        public static IQueryable<ArticleResponse> ProjectToResponse(this IQueryable<Article> query)
+        public static IQueryable<ArticleResult> ProjectToResult(this IQueryable<Article> query)
         {
-            return query.Select(a => new ArticleResponse
+            return query.Select(a => new ArticleResult
             {
                 Id = a.Id,
                 Title = a.Title,
@@ -23,9 +23,9 @@ namespace VivesBlog.Services.Extensions
 
         }
 
-        public static IQueryable<PersonResponse> ProjectToResponse(this IQueryable<Person> query)
+        public static IQueryable<PersonResult> ProjectToResult(this IQueryable<Person> query)
         {
-            return query.Select(p => new PersonResponse
+            return query.Select(p => new PersonResult
             {
                 Id = p.Id,
                 FirstName = p.FirstName,

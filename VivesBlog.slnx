@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/Api/">
+    <Project Path="VivesBlog.Api/VivesBlog.Api.csproj" />
+    <Project Path="VivesBlog.Sdk/VivesBlog.Sdk.csproj" />
+  </Folder>
+  <Folder Name="/Core/">
+    <Project Path="VivesBlog.Model/VivesBlog.Model.csproj" />
+    <Project Path="VivesBlog.Repository/VivesBlog.Repository.csproj" />
+  </Folder>
+  <Folder Name="/Dto/">
+    <Project Path="VivesBlog.Dto/VivesBlog.Dto.csproj" />
+  </Folder>
+  <Folder Name="/Presentation/">
+    <Project Path="VivesBlog.Blazor/VivesBlog.Blazor.csproj" />
+    <Project Path="VivesBlog.Mvc/VivesBlog.Mvc.csproj" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="VivesBlog.Services/VivesBlog.Services.csproj" />
+  </Folder>
+  <Folder Name="/Vives/">
+    <Project Path="Vives.Security/Vives.Security.csproj" />
+    <Project Path="Vives.Services.Model/Vives.Services.Model.csproj" />
+  </Folder>
+  <Project Path="AppHost/AppHost.csproj" />
+</Solution>

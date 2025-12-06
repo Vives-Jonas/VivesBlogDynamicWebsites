@@ -1,7 +1,11 @@
 ﻿@inherits LayoutComponentBase
 
 <MudThemeProvider />
+<MudPopoverProvider />
 <MudDialogProvider />
+<MudSnackbarProvider />
+
+
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu"
@@ -11,7 +15,7 @@
         <MudText Typo="Typo.h5">VivesBlog</MudText>
     </MudAppBar>
 
-    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
+    <MudDrawer @bind-Open="IsDrawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
         <NavMenu />
     </MudDrawer>
 
@@ -23,10 +27,10 @@
 </MudLayout>
 
 @code {
-    private bool _drawerOpen = true;
+    private bool IsDrawerOpen = true;
 
     private void ToggleDrawer()
     {
-        _drawerOpen = !_drawerOpen;
+        IsDrawerOpen = !IsDrawerOpen;
     }
 }

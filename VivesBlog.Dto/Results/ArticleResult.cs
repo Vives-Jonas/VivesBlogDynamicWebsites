@@ -1,6 +1,6 @@
-﻿namespace VivesBlog.Dto.Responses
+﻿namespace VivesBlog.Dto.Results
 {
-    public class ArticleResponse
+    public class ArticleResult
     {
         public int Id { get; set; }
         

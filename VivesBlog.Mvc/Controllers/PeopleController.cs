@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Vives.Services.Model;
+using VivesBlog.Dto.Filter;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Mvc.Extensions;
 using VivesBlog.Sdk;
@@ -9,10 +11,10 @@ namespace VivesBlog.Mvc.Controllers
     {
         
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index([FromQuery] Paging paging, [FromQuery] string? sorting, [FromQuery] ArticleFilter? filter)
         {
             
-            var result = await personSdkService.Find();
+            var result = await personSdkService.Find(paging, sorting);
             return View(result);
         }
 
