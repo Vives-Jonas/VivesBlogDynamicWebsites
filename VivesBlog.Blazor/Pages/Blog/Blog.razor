@@ -1,8 +1,11 @@
 ﻿@page "/blog"
+@using VivesBlog.Blazor.Components
 @using VivesBlog.Dto.Requests
 
 
 @inject BlogSdkService BlogSdkService
+@inject IDialogService DialogService
+@inject NavigationManager NavigationManager
 @inject IDialogService DialogService
 
 <PageTitle>Blog</PageTitle>
@@ -17,7 +20,36 @@
     </MudStack>
     @if (Articles is null)
     {
-        <MudProgressCircular Indeterminate="true" Color="Color.Primary" />
+        <MudGrid Class="mt-4" Spacing="0">
+            @for (int i = 0; i < 3; i++)
+            {
+                <MudItem xs="12">
+                    <MudCard Class="mb-4 mud-elevation-1">
+
+                        <MudCardContent>
+
+                            <!-- Title skeleton -->
+                            <MudSkeleton Width="60%" Height="28px" Class="mb-2" />
+
+                            <!-- Author skeleton -->
+                            <MudSkeleton Width="35%" Height="16px" Class="mb-3" />
+
+                            <!-- Content skeleton lines -->
+                            <MudSkeleton Width="90%" Height="14px" Class="mb-1" />
+                            <MudSkeleton Width="80%" Height="14px" Class="mb-1" />
+                            <MudSkeleton Width="95%" Height="14px" Class="mb-2" />
+
+                        </MudCardContent>
+
+                        <MudCardActions Class="px-4 pb-4">
+                            <MudSkeleton Width="70px" Height="32px" />
+                            <MudSkeleton Width="70px" Height="32px" />
+                        </MudCardActions>
+
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
     }
     else if (!Articles.Any())
     {
@@ -27,25 +59,43 @@
     {
 
 
-        <MudGrid>
+        <MudGrid Class="mt-4" Spacing="0">
             @foreach (var post in Articles)
             {
-                <MudItem xs="12" sm="6" md="4">
-                    <MudCard Class="mb-4">
+                <MudItem xs="12">
+                    <MudCard Class="mb-4 mud-elevation-2">
 
+                        <!-- Header -->
                         <MudCardContent>
-                            <MudText Typo="Typo.h6">@post.Title</MudText>
-                            <MudText>@post.Content</MudText>
+
+                            <MudText Typo="Typo.h5" Class="mb-1">
+                                @post.Title
+                            </MudText>
+
+                            @if (post.AuthorId.HasValue)
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">
+                                    by <MudLink Href="@AppRoutes.People.GetDetailsUrl((int)post.AuthorId)">@post.AuthorName</MudLink> on @post.CreatedDate.ToShortDateString()
+                                </MudText>
+                            }
+
+                            <MudText Typo="Typo.body1" Class="mb-2">
+                                @post.Content
+                            </MudText>
+
                         </MudCardContent>
 
-                        <MudCardActions>
-                            @* <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => EditPost(post))">
+                        <!-- Actions -->
+                        <MudCardActions Class="px-4 pb-4">
+                            <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => EditPost(post))">
                                 Edit
-                            </MudButton> *@
+                            </MudButton>
 
-                            <MudButton Size="Size.Small" Color="Color.Error" OnClick="@(() => DeletePost(post.Id))">
+                            <MudButton Size="Size.Small" Color="Color.Error" Variant="Variant.Text"
+                                       OnClick="@(() => DeletePost(post.Id))">
                                 Delete
                             </MudButton>
+
                         </MudCardActions>
 
                     </MudCard>
@@ -56,60 +106,60 @@
 </MudContainer>
 
     @code {
-    private IList<ArticleResponse>? Articles { get; set; }
+    private IList<ArticleResult>? Articles { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await BlogSdkService.Find();
-        Articles = result;
+        var result = await BlogSdkService.Find(new Vives.Services.Model.Paging{});
+        Articles = result.Data.ToList();
         await base.OnInitializedAsync();
     }
 
 
     private async Task AddPost()
     {
-        var parameters = new DialogParameters
+        var options = new DialogOptions
         {
-            { "Request", new ArticleRequest { Title = "", Content = "" } },
-            { "IsEdit", false }
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
         };
-        var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        var dialog = await DialogService.ShowAsync<ArticleDialog>("New Post", parameters, options);
+        var dialog = await DialogService.ShowAsync<ArticleDialog>("Add New Post", options);
         var result = await dialog.Result;
 
         if (result is not null && !result.Canceled)
         {
-            await BlogSdkService.Create((ArticleRequest)result.Data);
-            Articles = await BlogSdkService.Find();
-            StateHasChanged();
+
+            NavigationManager.NavigateTo("/blog");
         }
     }
 
-    // private async Task EditPost(ArticleResponse post)
-    // {
-    //     var parameters = new DialogParameters
-    //     {
-    //         { "Model", new ArticleRequest {  Title = post.Title, Content = post.Content } },
-    //         { "IsEdit", true }
-    //     };
-    //     var options = new DialogOptions { CloseOnEscapeKey = true };
+    private async Task EditPost(ArticleResult post)
+    {
+        // var parameters = new DialogParameters
+        // {
+        //     { "Model", new ArticleRequest {  Title = post.Title, Content = post.Content } },
+        //     { "IsEdit", true }
+        // };
+        // var options = new DialogOptions { CloseOnEscapeKey = true };
 
-    //     var dialog = await DialogService.ShowAsync<ArticleDialog>("Edit Post", parameters, options);
-    //     var result = await dialog.Result;
+        // var dialog = await DialogService.ShowAsync<ArticleDialog>("Edit Post", parameters, options);
+        // var result = await dialog.Result;
 
-    //     if (!result.Canceled)
-    //     {
-    //         await BlogSdkService.Update((ArticleRequest)result.Data);
-    //         Articles = await BlogSdkService.Find();
-    //         StateHasChanged();
-    //     }
-    // }
+        // if (!result.Canceled)
+        // {
+        //     await BlogSdkService.Update(post.Id,(ArticleRequest)result.Data);
+        //     Articles = await BlogSdkService.Find(new Paging());
+        //     StateHasChanged();
+        // }
+    }
 
     private async Task DeletePost(int id)
     {
         await BlogSdkService.Delete(id);
-        Articles = await BlogSdkService.Find();
+        var result = await BlogSdkService.Find(new Paging());
+        Articles = result.Data.ToList();
         StateHasChanged();
     }
 

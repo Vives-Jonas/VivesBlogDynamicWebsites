@@ -1,0 +1,42 @@
+﻿@attribute [Route(AppRoutes.People.Details)]
+
+@using VivesBlog.Dto.Results
+@using VivesBlog.Sdk
+
+@inject PersonSdkService PersonSdkService
+<h3>PersonDetail</h3>
+
+@if (Person is null)
+{
+    <MudOverlay Visible="true" DarkBackground="true" ZIndex="9999">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <h4>@Person.FirstName</h4>
+    <p>@Person.FirstName @Person.LastName</p>
+    @if (!string.IsNullOrWhiteSpace(Person.Email))
+    {
+        <p><a href="mailto:@Person.Email">@Person.Email</a></p>
+    }
+    else
+    {
+        <p><em>No email provided</em></p>
+    }
+}
+<a href="/">Back to home</a>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private PersonResult? Person { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Person = await PersonSdkService.Get(Id);
+        await base.OnInitializedAsync();
+    }
+
+}

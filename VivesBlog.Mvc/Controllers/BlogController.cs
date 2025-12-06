@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Vives.Services.Model;
+using VivesBlog.Dto.Filter;
 using VivesBlog.Dto.Requests;
 using VivesBlog.Mvc.Extensions;
 using VivesBlog.Sdk;
@@ -10,10 +12,10 @@ namespace VivesBlog.Mvc.Controllers
 
         [HttpGet]
         [Route("Vives-Blog")]
-        public async Task<IActionResult> Index([FromQuery] int? authorId)
+        public async Task<IActionResult> Index([FromQuery] Paging paging, [FromQuery] string? sorting, [FromQuery]ArticleFilter? filter)
         {
             ViewData["IsDetail"] = false;
-            var result = await blogSdkService.Find(authorId);
+            var result = await blogSdkService.Find(paging, sorting);
             
             return View(result);
         }
@@ -115,7 +117,7 @@ namespace VivesBlog.Mvc.Controllers
 
         private async Task<IActionResult> CreateView(string viewName, ArticleRequest? request = null)
         {
-            ViewBag.Authors = await personSdkService.Find();
+            ViewBag.Authors = await personSdkService.Find(new Paging());
             if (request is null)
             {
                 return View(viewName);

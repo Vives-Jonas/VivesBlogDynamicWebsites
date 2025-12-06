@@ -1,0 +1,66 @@
+﻿@attribute [Route(AppRoutes.Dashboard.Index)]
+
+@inject NavigationManager NavigationManager
+@inject BlogSdkService BlogSdkService
+
+<PageTitle>Dashboard - Vives Blog</PageTitle>
+<MudSelect T="int" Label="Amount of Articles" Value="AmountOfArticles" ValueChanged="OnAmountChanged" Variant="Variant.Outlined" Class="mb-4">
+    <MudSelectItem Value="3">3</MudSelectItem>
+    <MudSelectItem Value="5">5</MudSelectItem>
+    <MudSelectItem Value="7">7</MudSelectItem>
+    <MudSelectItem Value="10">10</MudSelectItem>
+</MudSelect>
+@if (TopArticles is null)
+{
+    <MudOverlay Visible="true" DarkBackground="true" ZIndex="9999">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudOverlay>
+}
+else
+{
+    <MudGrid Spacing="6">
+        @foreach (var article in TopArticles)
+        {
+            <MudItem xs="12" sm="6">
+                <MudCard>
+                    <MudCardContent>
+                        <MudText Typo="Typo.h5">@article.Title</MudText>
+                        <MudText Typo="Typo.body1">@article.Content</MudText>
+                        @if (article.AuthorId.HasValue)
+                        {
+                            <MudText Typo="Typo.body2">
+                                Written by <MudLink Href="@AppRoutes.People.GetDetailsUrl((int)article.AuthorId)">@article.AuthorName</MudLink>
+                                on
+                                @article.CreatedDate.ToShortDateString()
+                                at @article.CreatedDate.ToShortTimeString()
+                            </MudText>
+                        }
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary">Details</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+}
+
+
+
+@code {
+    private IList<ArticleResult>? TopArticles { get; set; }
+
+    [Parameter]
+    public int AmountOfArticles { get; set; } = 5;
+
+    protected override async Task OnInitializedAsync()
+    {
+        TopArticles = await BlogSdkService.GetRandom(AmountOfArticles);
+    }
+
+    private async Task OnAmountChanged(int value)
+    {
+        AmountOfArticles = value;
+        TopArticles = await BlogSdkService.GetRandom(AmountOfArticles);
+    }
+}

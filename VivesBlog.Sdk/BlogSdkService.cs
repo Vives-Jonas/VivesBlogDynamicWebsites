@@ -1,8 +1,11 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Json;
+using System.Reflection;
 using Vives.Services.Model;
 using Vives.Services.Model.Extensions;
+using VivesBlog.Dto.Filter;
 using VivesBlog.Dto.Requests;
-using VivesBlog.Dto.Responses;
+using VivesBlog.Dto.Results;
 using VivesBlog.Sdk.Settings;
 
 namespace VivesBlog.Sdk
@@ -10,25 +13,55 @@ namespace VivesBlog.Sdk
     public class BlogSdkService(IHttpClientFactory httpClientFactory)
     {
         //Find
-        public async Task<IList<ArticleResponse>> Find(int? authorId = null)
+        public async Task<FilteredPagedServiceResult<ArticleResult, ArticleFilter>> Find(Paging paging, string? sorting = null, ArticleFilter? filter = null)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
 
-            var response = await httpClient.GetAsync(ApiSettings.BlogByAuthorId(authorId));
+            var route = ApiSettings.BlogBase;
 
-            if (!response.IsSuccessStatusCode)
+            route = QueryHelpers.AddQueryString(route, "offset", paging.Offset.ToString());
+            route = QueryHelpers.AddQueryString(route, "limit", paging.Limit.ToString());
+
+            if (!string.IsNullOrWhiteSpace(sorting))
             {
-                return new List<ArticleResponse>();
+                route = QueryHelpers.AddQueryString(route, "sorting", sorting);
             }
 
-            var result = await response.Content.ReadFromJsonAsync<IList<ArticleResponse>>();
+            if (filter != null)
+            {
+                var queryParams = new Dictionary<string, string?>();
 
-            return result ?? new List<ArticleResponse>();
+                if (!string.IsNullOrWhiteSpace(filter.Search))
+                    queryParams["Search"] = filter.Search;
+
+                if (!string.IsNullOrWhiteSpace(filter.AuthorName))
+                    queryParams["AuthorName"] = filter.AuthorName;
+
+                if (filter.AuthorId.HasValue)
+                    queryParams["AuthorId"] = filter.AuthorId.ToString();
+
+                queryParams["UseAuthorIdFilter"] = filter.UseAuthorIdFilter.ToString();
+
+                // Add other filter properties as needed...
+
+                if (queryParams.Any())
+                {
+                    route = QueryHelpers.AddQueryString(route, queryParams);
+                }
+            }
+
+            var response = await httpClient.GetAsync(route);
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<FilteredPagedServiceResult<ArticleResult, ArticleFilter>>();
+
+            return result ?? new FilteredPagedServiceResult<ArticleResult, ArticleFilter>().NoContent();
 
         }
 
         //Get
-        public async Task<ArticleResponse?> Get(int id)
+        public async Task<ArticleResult?> Get(int id)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
             
@@ -39,7 +72,7 @@ namespace VivesBlog.Sdk
                 return null;
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ArticleResponse>();
+            var result = await response.Content.ReadFromJsonAsync<ArticleResult>();
 
             return result;
 
@@ -47,7 +80,7 @@ namespace VivesBlog.Sdk
 
 
         //Get Random
-        public async Task<IList<ArticleResponse>> GetRandom(int count = 5)
+        public async Task<IList<ArticleResult>> GetRandom(int count = 5)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
 
@@ -55,17 +88,17 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new List<ArticleResponse>();
+                return new List<ArticleResult>();
             }
 
-            var result = await response.Content.ReadFromJsonAsync<IList<ArticleResponse>>();
+            var result = await response.Content.ReadFromJsonAsync<IList<ArticleResult>>();
 
-            return result ?? new List<ArticleResponse>();
+            return result ?? new List<ArticleResult>();
         }
 
 
         //Create
-        public async Task<ServiceResult<ArticleResponse>> Create(ArticleRequest request)
+        public async Task<ServiceResult<ArticleResult>> Create(ArticleRequest request)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
            
@@ -73,17 +106,17 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult<ArticleResponse>();
+                return new ServiceResult<ArticleResult>();
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResult>>();
 
-            return result ?? new ServiceResult<ArticleResponse>();
+            return result ?? new ServiceResult<ArticleResult>();
 
         }
 
         //Update
-        public async Task<ServiceResult<ArticleResponse>> Update(int id, ArticleRequest request)
+        public async Task<ServiceResult<ArticleResult>> Update(int id, ArticleRequest request)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
             
@@ -91,12 +124,12 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult<ArticleResponse>();
+                return new ServiceResult<ArticleResult>();
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResponse>>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<ArticleResult>>();
 
-            return result ?? new ServiceResult<ArticleResponse>();
+            return result ?? new ServiceResult<ArticleResult>();
 
         }
 

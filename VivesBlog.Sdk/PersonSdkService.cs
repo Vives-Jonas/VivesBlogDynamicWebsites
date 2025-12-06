@@ -1,8 +1,11 @@
-﻿using System.Net.Http.Json;
+﻿using Microsoft.AspNetCore.WebUtilities;
+using System.Net.Http.Json;
+using System.Reflection;
 using Vives.Services.Model;
 using Vives.Services.Model.Extensions;
+using VivesBlog.Dto.Filter;
 using VivesBlog.Dto.Requests;
-using VivesBlog.Dto.Responses;
+using VivesBlog.Dto.Results;
 using VivesBlog.Sdk.Settings;
 
 namespace VivesBlog.Sdk
@@ -10,25 +13,54 @@ namespace VivesBlog.Sdk
     public class PersonSdkService(IHttpClientFactory httpClientFactory)
     {
         //Find
-        public async Task<IList<PersonResponse>> Find()
+        public async Task<PagedServiceResult<PersonResult>> Find(Paging paging, string? sorting = null, PersonFilter? filter = null)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
-            
-            var response = await httpClient.GetAsync(ApiSettings.PeopleBase);
 
-            if (!response.IsSuccessStatusCode)
+            var route = ApiSettings.PeopleBase;
+
+            route = QueryHelpers.AddQueryString(route, "offset", paging.Offset.ToString());
+            route = QueryHelpers.AddQueryString(route, "limit", paging.Limit.ToString());
+
+
+            if (!string.IsNullOrWhiteSpace(sorting))
             {
-                return new List<PersonResponse>();
+                route = QueryHelpers.AddQueryString(route, "sorting", sorting);
             }
 
-            var result = await response.Content.ReadFromJsonAsync<IList<PersonResponse>>();
+            if (filter != null)
+            {
+                var queryParams = new Dictionary<string, string?>();
 
-            return result ?? new List<PersonResponse>();
+                if (!string.IsNullOrWhiteSpace(filter.FirstName))
+                    queryParams["FirstName"] = filter.FirstName;
+
+                if (!string.IsNullOrWhiteSpace(filter.LastName))
+                    queryParams["LastName"] = filter.LastName;
+
+                if (!string.IsNullOrWhiteSpace(filter.Search))
+                    queryParams["SearchText"] = filter.Search;
+
+                
+
+                if (queryParams.Any())
+                {
+                    route = QueryHelpers.AddQueryString(route, queryParams);
+                }
+            }
+
+            var response = await httpClient.GetAsync(route);
+
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<PagedServiceResult<PersonResult>>();
+
+            return result ?? new PagedServiceResult<PersonResult>().NoContent();
 
         }
 
         //Get
-        public async Task<PersonResponse?> Get(int id)
+        public async Task<PersonResult?> Get(int id)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
 
@@ -39,7 +71,7 @@ namespace VivesBlog.Sdk
                 return null;
             }
 
-            var result = await response.Content.ReadFromJsonAsync<PersonResponse>();
+            var result = await response.Content.ReadFromJsonAsync<PersonResult>();
 
             return result;
 
@@ -47,7 +79,7 @@ namespace VivesBlog.Sdk
 
 
         //Create
-        public async Task<ServiceResult<PersonResponse>> Create(PersonRequest request)
+        public async Task<ServiceResult<PersonResult>> Create(PersonRequest request)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
             
@@ -55,17 +87,17 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult<PersonResponse>();
+                return new ServiceResult<PersonResult>();
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResponse>>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResult>>();
 
-            return result ?? new ServiceResult<PersonResponse>();
+            return result ?? new ServiceResult<PersonResult>();
 
         }
 
         //Update
-        public async Task<ServiceResult<PersonResponse>> Update(int id, PersonRequest request)
+        public async Task<ServiceResult<PersonResult>> Update(int id, PersonRequest request)
         {
             var httpClient = httpClientFactory.CreateClient(ApiSettings.HttpClientName);
             
@@ -73,12 +105,12 @@ namespace VivesBlog.Sdk
 
             if (!response.IsSuccessStatusCode)
             {
-                return new ServiceResult<PersonResponse>();
+                return new ServiceResult<PersonResult>();
             }
 
-            var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResponse>>();
+            var result = await response.Content.ReadFromJsonAsync<ServiceResult<PersonResult>>();
 
-            return result ?? new ServiceResult<PersonResponse>();
+            return result ?? new ServiceResult<PersonResult>();
 
         }
 

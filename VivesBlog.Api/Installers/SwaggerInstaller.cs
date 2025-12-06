@@ -8,30 +8,23 @@ namespace VivesBlog.Api.Installers
         {
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
-
-
             builder.Services.AddSwaggerGen(options =>
             {
-                options.AddSecurityDefinition("bearer", new OpenApiSecurityScheme
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
-                    Description = "JWT Authorization header using the Bearer scheme. \n\nExample: Authorization: Bearer {token}",
-                    Type = SecuritySchemeType.Http,
-                    Scheme = "bearer",
-                    BearerFormat = "JWT"
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
                 });
 
                 options.AddSecurityRequirement(document => new OpenApiSecurityRequirement
                 {
                     [new OpenApiSecuritySchemeReference("bearer", document)] = []
                 });
-
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "Vives Blog API",
-                    Version = "v1",
-                    Description = "API for Vives Blog application",
-                });
             });
+
             return builder;
         }
     }
