@@ -99,8 +99,18 @@
 
     private async Task LoadAuthors()
     {
-        var result = await PersonSdkService.Find(new Vives.Services.Model.Paging());
-        Authors = result.Data.ToList();
+        var result = await PersonSdkService.Find(new Paging { Limit = 100 });
+        if(result.IsSuccess && result.Data is not null)
+        {
+            Authors = result.Data.ToList();
+            
+        }
+        else
+        {
+            Snackbar.Add("Failed to load authors.", Severity.Error);
+            return;
+        }
+        
     }
 
     private void Cancel()

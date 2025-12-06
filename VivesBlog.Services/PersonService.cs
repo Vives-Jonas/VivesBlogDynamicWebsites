@@ -21,10 +21,12 @@ namespace VivesBlog.Services
                 .ApplyFilter(filter);
             var totalCount = await query.CountAsync();
 
-            var people = await query
-                .ProjectToResult()
+            sorting ??= $"{nameof(PersonResult.LastName)}, {nameof(PersonResult.FirstName)}";
+
+            var people = await query                
                 .OrderBy(sorting)
                 .ApplyPaging(paging)
+                .ProjectToResult()
                 .ToListAsync();
 
             return new FilteredPagedServiceResult<PersonResult, PersonFilter>

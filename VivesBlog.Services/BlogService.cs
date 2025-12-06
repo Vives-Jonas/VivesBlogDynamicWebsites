@@ -13,15 +13,17 @@ namespace VivesBlog.Services
 {
     public class BlogService(VivesBlogDbContext dbContext)
     {
-        public async Task<FilteredPagedServiceResult<ArticleResult, ArticleFilter>> Find(Paging paging, string? sorting,ArticleFilter? filter)
+        public async Task<FilteredPagedServiceResult<ArticleResult, ArticleFilter>> Find(Paging paging, string? sorting, ArticleFilter? filter)
         {
             var query = dbContext.Articles.AsNoTracking().Include(a => a.Author).ApplyFilter(filter);
             var totalCount = await query.CountAsync();
 
-            var articles = await query
-                .ProjectToResult()
+            sorting ??= $"{nameof(ArticleResult.CreatedDate)} desc";
+
+            var articles = await query                
                 .OrderBy(sorting)
                 .ApplyPaging(paging)
+                .ProjectToResult()
                 .ToListAsync();
 
             return new FilteredPagedServiceResult<ArticleResult, ArticleFilter>

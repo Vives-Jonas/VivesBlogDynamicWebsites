@@ -1,0 +1,117 @@
+﻿@inject BlogSdkService BlogSdkService
+
+<MudCard Class="mb-4 mud-elevation-2">
+    @if (Post is null)
+    {
+        <MudSkeleton Width="100%" Height="200px">
+            <MudCardContent>
+                <MudText Class="mb-1">
+
+                </MudText>
+
+
+                <MudText Typo="Typo.caption" Class="mb-2">
+                    by <MudLink></MudLink>
+                </MudText>
+
+
+                <MudText Typo="Typo.body1" Class="mb-2">
+
+                </MudText>
+
+            </MudCardContent>
+
+            <!-- Actions -->
+            <MudCardActions Class="px-4 pb-4">
+                <MudButton Size="Size.Small" Color="Color.Primary">
+                    Edit
+                </MudButton>
+
+                <MudButton Size="Size.Small" Color="Color.Error" Variant="Variant.Text">
+                    Delete
+                </MudButton>
+
+            </MudCardActions>
+        </MudSkeleton>
+    }
+    else
+    {
+        <!-- Header -->
+        <MudCardContent>
+
+            <MudText Typo="Typo.h5" Class="mb-1">
+                @Post.Title
+            </MudText>
+
+            @if (Post.AuthorId.HasValue)
+            {
+                <MudText Typo="Typo.caption" Color="Color.Secondary" Class="mb-2">
+                    by <MudLink Href="@AppRoutes.People.GetDetailsUrl((int)Post.AuthorId)">@Post.AuthorName</MudLink> on @Post.CreatedDate.ToShortDateString()
+                </MudText>
+            }
+
+            <MudText Typo="Typo.body1" Class="mb-2">
+                @Post.Content
+            </MudText>
+
+        </MudCardContent>
+
+        <!-- Actions -->
+        <MudCardActions Class="px-4 pb-4">
+            <MudButton Size="Size.Small" Color="Color.Primary" OnClick="@(() => EditPost(Post))">
+                Edit
+            </MudButton>
+
+            <MudButton Size="Size.Small" Color="Color.Error" Variant="Variant.Text"
+                       OnClick="@(() => DeletePost(Post.Id))">
+                Delete
+            </MudButton>
+
+        </MudCardActions>
+    }
+    
+
+</MudCard>
+
+@code {
+    [Parameter]
+    public ArticleResult? Post { get; set; }
+
+    [Parameter]
+    public EventCallback OnPostUpdated { get; set; }
+
+    private bool IsEdit { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        IsEdit = false;
+        await base.OnInitializedAsync();
+    }
+
+    private async Task EditPost(ArticleResult post)
+    {
+        // var parameters = new DialogParameters
+        // {
+        //     { "Model", new ArticleRequest {  Title = post.Title, Content = post.Content } },
+        //     { "IsEdit", true }
+        // };
+        // var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        // var dialog = await DialogService.ShowAsync<ArticleDialog>("Edit Post", parameters, options);
+        // var result = await dialog.Result;
+
+        // if (!result.Canceled)
+        // {
+        //     await BlogSdkService.Update(post.Id,(ArticleRequest)result.Data);
+        //     Articles = await BlogSdkService.Find(new Paging());
+        //     StateHasChanged();
+        // }
+        await OnPostUpdated.InvokeAsync();
+    }
+
+    private async Task DeletePost(int id)
+    {
+        await BlogSdkService.Delete(id);
+        await OnPostUpdated.InvokeAsync();        
+    }
+}

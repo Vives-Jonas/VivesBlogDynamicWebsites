@@ -1,0 +1,112 @@
+﻿@attribute [Route(AppRoutes.Blog.Index)]
+
+@inject BlogSdkService BlogSdkService
+@inject NavigationManager NavigationManager
+@inject IDialogService DialogService
+
+<PageTitle>Blog</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large">
+
+    <MudStack Row AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Class="mb-4">
+        <MudText Typo="Typo.h4">Blog Posts</MudText>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" OnClick="AddPost">
+            Add New Post
+        </MudButton>
+    </MudStack>
+    @if (Articles is null)
+    {
+        <MudGrid Class="mt-4" Spacing="0">
+            @for (int i = 0; i < 3; i++)
+            {
+                <MudItem xs="12">
+                    <MudCard Class="mb-4 mud-elevation-1">
+
+                        <MudCardContent>
+
+                            <!-- Title skeleton -->
+                            <MudSkeleton Width="60%" Height="28px" Class="mb-2" />
+
+                            <!-- Author skeleton -->
+                            <MudSkeleton Width="35%" Height="16px" Class="mb-3" />
+
+                            <!-- Content skeleton lines -->
+                            <MudSkeleton Width="90%" Height="14px" Class="mb-1" />
+                            <MudSkeleton Width="80%" Height="14px" Class="mb-1" />
+                            <MudSkeleton Width="95%" Height="14px" Class="mb-2" />
+
+                        </MudCardContent>
+
+                        <MudCardActions Class="px-4 pb-4">
+                            <MudSkeleton Width="70px" Height="32px" />
+                            <MudSkeleton Width="70px" Height="32px" />
+                        </MudCardActions>
+
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    }
+    else if (!Articles.Any())
+    {
+        <MudText>No blog posts available. Click "Add New Post" to create one.</MudText>
+    }
+    else
+    {
+
+
+        <MudGrid Class="mt-4" Spacing="0">
+            @foreach (var post in Articles)
+            {
+                <MudItem xs="12">
+                    <ArticleCard Post="post" OnPostUpdated="LoadArticles" />
+                </MudItem>
+            }
+        </MudGrid>
+    }
+</MudContainer>
+
+    @code {
+    private IList<ArticleResult>? Articles { get; set; }
+    
+
+    protected override async Task OnInitializedAsync()
+    {
+        
+        await LoadArticles();
+        await base.OnInitializedAsync();
+    }
+
+
+    private async Task AddPost()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            MaxWidth = MaxWidth.ExtraLarge,
+            FullWidth = true
+        };
+
+        var dialog = await DialogService.ShowAsync<ArticleDialog>("Add New Post", options);
+        var result = await dialog.Result;
+
+        if (result is not null && !result.Canceled)
+        {
+            await LoadArticles();
+            // NavigationManager.NavigateTo("/blog");
+        }
+    }
+
+    
+
+    private async Task LoadArticles()
+    {
+        var result = await BlogSdkService.Find(new Paging { Limit = 1000 });
+
+        if (result.IsSuccess && result.Data is not null)
+        {
+            Articles = result.Data.ToList();
+        }
+    }
+
+}
